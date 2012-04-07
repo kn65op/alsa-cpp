@@ -7,13 +7,7 @@
 
 #include "../include/Device.h"
 
-Device::Device()
-{
-}
-
-Device::Device(const Device& orig)
-{
-}
+using namespace ALSA;
 
 Device::~Device()
 {
