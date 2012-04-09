@@ -11,7 +11,8 @@ using namespace ALSA;
 
 Device::Device()
 {
-  handle = 0;
+  clear();
+  data_format = DataFormat::U8;
 }
 
 Device::~Device()
@@ -24,7 +25,7 @@ void Device::close()
   if (handle) //zapobieganie dwukrotnemu zamnięciu.
   {
     snd_pcm_close(handle);
-    handle = 0;
+    clear();
   }
 }
 
@@ -34,6 +35,7 @@ void Device::open(AccessMode am) throw (WrongArgument, InvalidOperation)
   {
     throw InvalidOperation("Device is already opened.");
   }
+  access_mode = am; //zapisanie trybu otwarcia
   snd_pcm_stream_t mode;
   switch (am) //wybór trybu otwarcia
   {
@@ -53,7 +55,7 @@ void Device::open(AccessMode am) throw (WrongArgument, InvalidOperation)
     throw InvalidOperation(snd_strerror(err));
   }
   if ((err = snd_pcm_set_params(handle,
-                                SND_PCM_FORMAT_U8,
+                                getFormat(data_format),
                                 SND_PCM_ACCESS_RW_INTERLEAVED,
                                 1,
                                 48000,
@@ -61,5 +63,29 @@ void Device::open(AccessMode am) throw (WrongArgument, InvalidOperation)
                                 500000)) < 0)
   {
     throw InvalidOperation(snd_strerror(err));
+  }
+}
+
+void Device::setDataFormat(DataFormat df)
+{
+  data_format = df;
+}
+
+void Device::clear()
+{
+  handle = 0;
+  access_mode = AccessMode::INVALID;
+}
+
+snd_pcm_format_t Device::getFormat(DataFormat df)
+{
+  switch (data_format)
+  {
+    case DataFormat::U8:
+      return SND_PCM_FORMAT_U8;
+    case DataFormat::U16:
+      return SND_PCM_FORMAT_U16;
+    default :
+      throw InvalidOperation("Wrong data format");
   }
 }

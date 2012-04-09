@@ -114,14 +114,27 @@ namespace ALSA
      */
     void close();
     /**
-     * Funkcja ustawiająca format danych.
+     * Funkcja ustawiająca format danych. Formatu nie można zmienić dla otwartego urządzenia.
      * @param df ALSA::DataFormat określający format przysyłanych danych.
      */
-    void setDateFormat(DataFormat df);
+    void setDataFormat(DataFormat df);
   private:
     snd_pcm_t *handle; //uchwyt
     char *device; //urządzenie
-    AccessMode data_format; //służy do kontroli kierunku przepływu informacji
+    AccessMode access_mode; //służy do kontroli kierunku przepływu informacji
+    DataFormat data_format;
+    
+    /**
+     * Zamiana formatu ALSA::DataFormat na snd_pcm_format_t
+     * @param df ALSA::DataForamt dla którego chcemy uzyskać snd_pcm_format_t.
+     * @return Wartość snd_pcm_format_t odpowiadający podanemu ALSA::DataFormat.
+     */
+    snd_pcm_format_t getFormat(DataFormat df);
+    
+    /**
+     * Funkcja czyszcząca.
+     */
+    void clear();
   };
 }
 
