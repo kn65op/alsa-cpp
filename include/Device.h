@@ -80,7 +80,7 @@ namespace ALSA
   {
   public:
     Device();
-    Device(const Device& orig);
+    Device(const Device& orig) = delete;//not implemented yet
     virtual ~Device();
     /**
      * Funkcja ustawiająca urządzenie.
@@ -92,7 +92,7 @@ namespace ALSA
      * </ul>
      * @param dev std::string odpowiadający urządzeniu w formacie wymaganym przez ALSA.
      */
-    void setDevice(const std::string dev);
+    void setDevice(std::string dev);
     /**
      * Funkcja otwierająca urządzenie.
      * @param am ALSA::AccessMode określający kierunek przypływu informacji.
@@ -128,4 +128,3 @@ namespace ALSA
 }
 
 #endif	/* DEVICE_H */
-
