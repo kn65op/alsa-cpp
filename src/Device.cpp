@@ -9,7 +9,21 @@
 
 using namespace ALSA;
 
-Device::~Device()
+Device::Device()
 {
+  handle = 0;
 }
 
+Device::~Device()
+{
+  close();
+}
+
+void Device::close()
+{
+  if (handle) //zapobieganie dwukrotnemu zamnięciu.
+  {
+    snd_pcm_close(handle);
+    handle = 0;
+  }
+}
