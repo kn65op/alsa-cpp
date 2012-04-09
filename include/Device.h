@@ -94,17 +94,6 @@ namespace ALSA
      */
     void setDevice(const std::string dev);
     /**
-     * Funkcja ustawiająca urządzenie.
-     * <ul>Format wymagany przez ALSA (http://www.alsa-project.org/alsa-doc/alsa-lib/pcm.html)
-     * <li>default - urządzenie domyślne</li>
-     * <li>plughw:0,0, hw:0,0, pluh:hw - urządzenia fizyczne (?)</li>
-     * <li>file:'/tmp/out.raw',raw - plik</li>
-     * <li>file:'/tmp/out.wav',wav - plik</li>
-     * </ul>
-     * @param dev Napis w stylu C (char *) odpowiadający urządzeniu w formacie wymaganym przez ALSA.
-     */
-    void setDevice(const char * dev);
-    /**
      * Funkcja otwierająca urządzenie.
      * @param am ALSA::AccessMode określający kierunek przypływu informacji.
      */
@@ -120,17 +109,17 @@ namespace ALSA
     void setDataFormat(DataFormat df);
   private:
     snd_pcm_t *handle; //uchwyt
-    char *device; //urządzenie
+    std::string device; //urządzenie
     AccessMode access_mode; //służy do kontroli kierunku przepływu informacji
     DataFormat data_format;
-    
+
     /**
      * Zamiana formatu ALSA::DataFormat na snd_pcm_format_t
      * @param df ALSA::DataForamt dla którego chcemy uzyskać snd_pcm_format_t.
      * @return Wartość snd_pcm_format_t odpowiadający podanemu ALSA::DataFormat.
      */
     snd_pcm_format_t getFormat(DataFormat df);
-    
+
     /**
      * Funkcja czyszcząca.
      */

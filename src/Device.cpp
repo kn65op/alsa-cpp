@@ -49,7 +49,7 @@ void Device::open(AccessMode am) throw (WrongArgument, InvalidOperation)
       throw WrongArgument("At this moment you can only read or write.");
       break;
   }
-  int err = snd_pcm_open(&handle, device, mode, 0); //otwarcie
+  int err = snd_pcm_open(&handle, device.c_str(), mode, 0); //otwarcie
   if (err < 0)
   {
     throw InvalidOperation(snd_strerror(err));
@@ -88,4 +88,8 @@ snd_pcm_format_t Device::getFormat(DataFormat df)
     default :
       throw InvalidOperation("Wrong data format");
   }
+}
+void Device::setDevice(const std::string dev)
+{
+  device = dev;
 }
