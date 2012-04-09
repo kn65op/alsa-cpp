@@ -20,9 +20,34 @@ namespace ALSA
   class WrongArgument
   {
   public:
+    //Brak możliwości tworzenia wyjątku bez podania wiadomości.
     WrongArgument() = delete;
 
-    WrongArgument(std::string mes): message(mes)
+    /**
+     * Konstruktor z ustawieniem wiadomości.
+     * @param mes std::string z wiadomością.
+     */
+    WrongArgument(std::string mes) : message(mes)
+    {
+    };
+  private:
+    std::string message;
+  };
+
+  /**
+   * Klasa wyjątku w przypadku wywołania nieprawidłowej operacji lub błedu w trakcie operacji.
+   */
+  class InvalidOperation
+  {
+  public:
+    //Brak możliwości tworzenia wyjątku bez podania wiadomości.
+    InvalidOperation() = delete;
+
+    /**
+     * Konstruktor z ustawieniem wiadomości.
+     * @param mes std::string z wiadomością.
+     */
+    InvalidOperation(std::string mes) : message(mes)
     {
     };
   private:
@@ -83,7 +108,7 @@ namespace ALSA
      * Funkcja otwierająca urządzenie.
      * @param am ALSA::AccessMode określający kierunek przypływu informacji.
      */
-    void open(AccessMode am) throw(WrongArgument);
+    void open(AccessMode am) throw (WrongArgument, InvalidOperation);
     /**
      * Funkcja zamykająca urządzenie.
      */
