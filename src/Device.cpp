@@ -7,7 +7,7 @@
 
 #include "../include/Device.h"
 
-using namespace ALSA;
+using namespace TALSA;
 
 Device::Device()
 {

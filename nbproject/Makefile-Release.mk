@@ -34,7 +34,8 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/_ext/713640644/Device.o
+	${OBJECTDIR}/_ext/713640644/Device.o \
+	${OBJECTDIR}/_ext/713640644/Data.o
 
 
 # C Compiler Flags
@@ -65,6 +66,11 @@ ${OBJECTDIR}/_ext/713640644/Device.o: /home/tomko/moje_dziela/alsa-cpp/src/Devic
 	${MKDIR} -p ${OBJECTDIR}/_ext/713640644
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/713640644/Device.o /home/tomko/moje_dziela/alsa-cpp/src/Device.cpp
+
+${OBJECTDIR}/_ext/713640644/Data.o: /home/tomko/moje_dziela/alsa-cpp/src/Data.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/713640644
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/713640644/Data.o /home/tomko/moje_dziela/alsa-cpp/src/Data.cpp
 
 # Subprojects
 .build-subprojects:

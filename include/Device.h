@@ -9,69 +9,11 @@
 #define	DEVICE_H
 
 #include "alsa/asoundlib.h"
+#include "extras.h"
 #include <string>
 
-namespace ALSA
+namespace TALSA
 {
-
-  /**
-   * Klasa wyjątku w przypadku złego argumentu przekazanego w funkcji.
-   */
-  class WrongArgument
-  {
-  public:
-    //Brak możliwości tworzenia wyjątku bez podania wiadomości.
-    WrongArgument() = delete;
-
-    /**
-     * Konstruktor z ustawieniem wiadomości.
-     * @param mes std::string z wiadomością.
-     */
-    WrongArgument(std::string mes) : message(mes)
-    {
-    };
-  private:
-    std::string message;
-  };
-
-  /**
-   * Klasa wyjątku w przypadku wywołania nieprawidłowej operacji lub błedu w trakcie operacji.
-   */
-  class InvalidOperation
-  {
-  public:
-    //Brak możliwości tworzenia wyjątku bez podania wiadomości.
-    InvalidOperation() = delete;
-
-    /**
-     * Konstruktor z ustawieniem wiadomości.
-     * @param mes std::string z wiadomością.
-     */
-    InvalidOperation(std::string mes) : message(mes)
-    {
-    };
-  private:
-    std::string message;
-  };
-
-  /**
-   * Klasa służąca do określenia kierunku przepływu informacji.
-   */
-  enum class AccessMode
-  {
-    READ,
-    WRITE,
-    INVALID,
-  };
-
-  /**
-   * Klasa służąca do określenia formatu danych (rozmiar, itp)
-   */
-  enum class DataFormat
-  {
-    U8,
-    U16,
-  };
 
   /**
    * Klasa odwzorująca urządzenie (lub plik) umożliwiająca przesyłanie danych dźwiękowych.
@@ -80,11 +22,15 @@ namespace ALSA
   {
   public:
     Device();
+    /**
+     * Kopiowanie nie jest na razie możliwe.
+     */
     Device(const Device& orig) = delete;//not implemented yet
     virtual ~Device();
     /**
-     * Funkcja ustawiająca urządzenie.
-     * <ul>Format wymagany przez ALSA (http://www.alsa-project.org/alsa-doc/alsa-lib/pcm.html)
+     * Funkcja ustawiająca urządzenie.<br/>
+     * Format wymagany przez ALSA (http://www.alsa-project.org/alsa-doc/alsa-lib/pcm.html)
+     * <ul>
      * <li>default - urządzenie domyślne</li>
      * <li>plughw:0,0, hw:0,0, pluh:hw - urządzenia fizyczne (?)</li>
      * <li>file:'/tmp/out.raw',raw - plik</li>
@@ -95,7 +41,7 @@ namespace ALSA
     void setDevice(std::string dev);
     /**
      * Funkcja otwierająca urządzenie.
-     * @param am ALSA::AccessMode określający kierunek przypływu informacji.
+     * @param am TALSA::AccessMode określający kierunek przypływu informacji.
      */
     void open(AccessMode am) throw (WrongArgument, InvalidOperation);
     /**
@@ -104,7 +50,7 @@ namespace ALSA
     void close();
     /**
      * Funkcja ustawiająca format danych. Formatu nie można zmienić dla otwartego urządzenia.
-     * @param df ALSA::DataFormat określający format przysyłanych danych.
+     * @param df TALSA::DataFormat określający format przysyłanych danych.
      */
     void setDataFormat(DataFormat df);
   private:
@@ -114,8 +60,8 @@ namespace ALSA
     DataFormat data_format;
 
     /**
-     * Zamiana formatu ALSA::DataFormat na snd_pcm_format_t
-     * @param df ALSA::DataForamt dla którego chcemy uzyskać snd_pcm_format_t.
+     * Zamiana formatu TALSA::DataFormat na snd_pcm_format_t
+     * @param df TALSA::DataForamt dla którego chcemy uzyskać snd_pcm_format_t.
      * @return Wartość snd_pcm_format_t odpowiadający podanemu ALSA::DataFormat.
      */
     snd_pcm_format_t getFormat(DataFormat df);

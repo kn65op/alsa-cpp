@@ -4,7 +4,9 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
+      <itemPath>/home/tomko/moje_dziela/alsa-cpp/include/Data.h</itemPath>
       <itemPath>/home/tomko/moje_dziela/alsa-cpp/include/Device.h</itemPath>
+      <itemPath>/home/tomko/moje_dziela/alsa-cpp/include/extras.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -13,6 +15,7 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
+      <itemPath>/home/tomko/moje_dziela/alsa-cpp/src/Data.cpp</itemPath>
       <itemPath>/home/tomko/moje_dziela/alsa-cpp/src/Device.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
