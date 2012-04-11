@@ -84,9 +84,13 @@ void Device::setDevice(const std::string dev)
 
 void Device::write(Data& d) throw (WrongArgument, InvalidOperation)
 {
+  if (access_mode != AccessMode::WRITE)
+  {
+    throw InvalidOperation("Device hasn't been opened for writing");
+  }
   checkData(d);
   int tmp = snd_pcm_writei(handle, d.data, d.getSize());
-  if (tmp < 0 )
+  if (tmp < 0)
   {
     snd_pcm_recover(handle, tmp, 0); //w przypadku błędu przywracanie stanu do poprawnego
   }
@@ -102,9 +106,13 @@ void Device::write(Data& d) throw (WrongArgument, InvalidOperation)
 
 void Device::read(Data& d) throw (WrongArgument, InvalidOperation)
 {
+  if (access_mode != AccessMode::READ)
+  {
+    throw InvalidOperation("Device hasn't been opened for reading");
+  }
   checkData(d);
   int tmp = snd_pcm_readi(handle, d.data, d.getSize());
-  if (tmp < 0 )
+  if (tmp < 0)
   {
     snd_pcm_recover(handle, tmp, 0); //w przypadku błędu przywracanie stanu do poprawnego
   }
@@ -128,4 +136,9 @@ void Device::checkData(Data & d) throw (WrongArgument)
   {
     throw WrongArgument("Data size must be positive!");
   }
+}
+
+DataFormat Device::getDataFormat() const
+{
+  return data_format;
 }

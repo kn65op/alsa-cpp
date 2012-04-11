@@ -65,6 +65,11 @@ namespace TALSA
      * @param d Obiekt, który będzie przechowywał dane.
      */
     void read(Data & d) throw (WrongArgument, InvalidOperation);
+    /**
+     * Funkcja zwracająca używany przez dane urządzenie format danych.
+     * @return TALSA::DataFormat zgodny z formatem używanym przez urządzenie.
+     */
+    DataFormat getDataFormat() const;
   private:
     snd_pcm_t *handle; //uchwyt
     std::string device; //urządzenie
