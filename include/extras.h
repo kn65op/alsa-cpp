@@ -72,6 +72,7 @@ namespace TALSA
   {
     U8,
     U16,
+    U24,
   };
   
   /**

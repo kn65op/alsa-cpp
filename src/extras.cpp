@@ -10,6 +10,8 @@ snd_pcm_format_t getFormat(DataFormat df)
       return SND_PCM_FORMAT_U8;
     case DataFormat::U16:
       return SND_PCM_FORMAT_U16;
+    case DataFormat::U24:
+      return SND_PCM_FORMAT_U24;
     default:
       throw InvalidOperation("Wrong data format");
   }
@@ -23,6 +25,8 @@ int getSizeOfFormat(DataFormat df)
       return 1;
     case DataFormat::U16:
       return 2;
+    case DataFormat::U24:
+      return 4; //zgodnie z dokumentacją
     default:
       throw InvalidOperation("Wrong data format");
   }
