@@ -74,20 +74,56 @@ namespace TALSA
     U16,
     U24,
   };
-  
+
   /**
-   * Zamiana formatu TALSA::DataFormat na snd_pcm_format_t
-   * @param df TALSA::DataFormat dla którego chcemy uzyskać snd_pcm_format_t.
-   * @return Wartość snd_pcm_format_t odpowiadający podanemu ALSA::DataFormat.
+   * Klasa z funkcjami pomocniczymi do obsługi DataFormat
    */
-  snd_pcm_format_t getFormat(DataFormat df);
-  
-  /**
-   * Funkcja zwracająca ilość bitów potrzebnych do zapisania danego typu danych zgodnie z dokumentacją ALSA.
-   * @param df TALSA::DataFormat, którego rozmiar jest liczony.
-   * @return Ilość bitów, które potrzebne są do zapisania danego formau.
-   */
-  int getSizeOfFormat(DataFormat df);
+  class DataFormatHelper
+  {
+  public:
+    DataFormatHelper() = delete;
+    DataFormatHelper(const DataFormatHelper &) = delete;
+
+    /**
+     * Zamiana formatu TALSA::DataFormat na snd_pcm_format_t
+     * @param df TALSA::DataFormat dla którego chcemy uzyskać snd_pcm_format_t.
+     * @return Wartość snd_pcm_format_t odpowiadający podanemu ALSA::DataFormat.
+     */
+    static snd_pcm_format_t getFormat(DataFormat df)
+    {
+      switch (df)
+      {
+        case DataFormat::U8:
+          return SND_PCM_FORMAT_U8;
+        case DataFormat::U16:
+          return SND_PCM_FORMAT_U16;
+        case DataFormat::U24:
+          return SND_PCM_FORMAT_U24;
+        default:
+          throw InvalidOperation("Wrong data format");
+      }
+    }
+
+    /**
+     * Funkcja zwracająca ilość bitów potrzebnych do zapisania danego typu danych zgodnie z dokumentacją ALSA.
+     * @param df TALSA::DataFormat, którego rozmiar jest liczony.
+     * @return Ilość bitów, które potrzebne są do zapisania danego formau.
+     */
+    static int getSizeOfFormat(DataFormat df)
+    {
+      switch (df)
+      {
+        case DataFormat::U8:
+          return 1;
+        case DataFormat::U16:
+          return 2;
+        case DataFormat::U24:
+          return 4; //zgodnie z dokumentacją
+        default:
+          throw InvalidOperation("Wrong data format");
+      }
+    }
+  };
 
 }
 
