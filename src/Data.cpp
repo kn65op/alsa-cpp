@@ -9,7 +9,7 @@
 
 using namespace TALSA;
 
-Data::Data()
+Data::Data() : size(0)
 {
   data = 0;
 }
@@ -47,7 +47,15 @@ void Data::setDataFormat(DataFormat data_format)
 
 void Data::createData()
 {
-  int new_mem = size * DataFormatHelper::getSizeOfFormat(data_format);
+  int new_mem;
+  try
+  {
+    new_mem = size * DataFormatHelper::getSizeOfFormat(data_format);
+  }
+  catch (WrongArgument e) //jeśli nie podano foramtu, to poczekaj z alokacją pamięci
+  {
+    return;
+  }
   if (new_mem != mem_size) //potrzeba innej ilości pamięci.
   {
     if (data)

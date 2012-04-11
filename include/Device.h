@@ -18,7 +18,7 @@ namespace TALSA
 {
 
   /**
-   * Klasa odwzorująca urządzenie (lub plik) umożliwiająca przesyłanie danych dźwiękowych.
+   * Klasa odwzorująca urządzenie (lub plik) umożliwiająca przesyłanie danych dźwiękowych. Domyślnym formatem jest TALSA::DataFormat::U8.
    */
   class Device
   {

@@ -100,7 +100,7 @@ namespace TALSA
         case DataFormat::U24:
           return SND_PCM_FORMAT_U24;
         default:
-          throw InvalidOperation("Wrong data format");
+          throw WrongArgument("Wrong data format");
       }
     }
 
@@ -120,7 +120,7 @@ namespace TALSA
         case DataFormat::U24:
           return 4; //zgodnie z dokumentacją
         default:
-          throw InvalidOperation("Wrong data format");
+          throw WrongArgument("Wrong data format");
       }
     }
   };

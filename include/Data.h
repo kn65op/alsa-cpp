@@ -14,7 +14,7 @@ namespace TALSA
 {
 
   /**
-   * Klasa odwzorująca dane przesyłane z i do urządzeń.
+   * Klasa odwzorująca dane przesyłane z i do urządzeń. Konieczne jest ustalenie formatu przez działaniem.
    */
   class Data
   {

@@ -31,7 +31,7 @@ void Device::close()
 
 void Device::open(AccessMode am) throw (WrongArgument, InvalidOperation)
 {
-  if (!handle) // urządzenie jest już otwarte
+  if (handle) // urządzenie jest już otwarte
   {
     throw InvalidOperation("Device is already opened.");
   }
@@ -135,6 +135,10 @@ void Device::checkData(Data & d) throw (WrongArgument)
   if (!d.getSize())
   {
     throw WrongArgument("Data size must be positive!");
+  }
+  if (!d.data)
+  {
+    throw WrongArgument("Data must be allocated!");
   }
 }
 
