@@ -55,7 +55,7 @@ void Device::open(AccessMode am) throw (WrongArgument, InvalidOperation)
     throw InvalidOperation(snd_strerror(err));
   }
   if ((err = snd_pcm_set_params(handle,
-                                getFormat(data_format),
+                                DataFormatHelper::getFormat(data_format),
                                 SND_PCM_ACCESS_RW_INTERLEAVED,
                                 1,
                                 48000,

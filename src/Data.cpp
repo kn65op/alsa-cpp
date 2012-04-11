@@ -47,7 +47,7 @@ void Data::setDataFormat(DataFormat data_format)
 
 void Data::createData()
 {
-  int new_mem = size * getSizeOfFormat(data_format);
+  int new_mem = size * DataFormatHelper::getSizeOfFormat(data_format);
   if (new_mem != mem_size) //potrzeba innej ilości pamięci.
   {
     if (data)
