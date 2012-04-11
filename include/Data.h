@@ -41,9 +41,9 @@ namespace TALSA
     void setSize(int size);
     /**
      * Funkcja ustawiająca format danych na podany.
-     * @param Format danych.
+     * @param data_format Format danych.
      */
-    void setDataFormat(DataFormat);
+    void setDataFormat(DataFormat data_format);
     /**
      * Funkcja zwracająca format danych.
      * @return Format danych.
