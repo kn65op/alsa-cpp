@@ -81,7 +81,13 @@ namespace TALSA
   class DataFormatHelper
   {
   public:
+    /**
+     * Brak możliwości tworzenia instancji.
+     */
     DataFormatHelper() = delete;
+    /**
+     * Brak możliwości kopiowania.
+     */
     DataFormatHelper(const DataFormatHelper &) = delete;
 
     /**
