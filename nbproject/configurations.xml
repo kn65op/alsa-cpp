@@ -17,6 +17,7 @@
                    projectFiles="true">
       <itemPath>/home/tomko/moje_dziela/alsa-cpp/src/Data.cpp</itemPath>
       <itemPath>/home/tomko/moje_dziela/alsa-cpp/src/Device.cpp</itemPath>
+      <itemPath>/home/tomko/moje_dziela/alsa-cpp/src/extras.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"

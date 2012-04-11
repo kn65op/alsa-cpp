@@ -77,18 +77,6 @@ void Device::clear()
   access_mode = AccessMode::INVALID;
 }
 
-snd_pcm_format_t Device::getFormat(DataFormat df)
-{
-  switch (data_format)
-  {
-    case DataFormat::U8:
-      return SND_PCM_FORMAT_U8;
-    case DataFormat::U16:
-      return SND_PCM_FORMAT_U16;
-    default :
-      throw InvalidOperation("Wrong data format");
-  }
-}
 void Device::setDevice(const std::string dev)
 {
   device = dev;

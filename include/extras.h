@@ -10,6 +10,8 @@
 
 #include <string>
 
+#include <alsa/asoundlib.h>
+
 namespace TALSA
 {
 
@@ -71,6 +73,20 @@ namespace TALSA
     U8,
     U16,
   };
+  
+  /**
+   * Zamiana formatu TALSA::DataFormat na snd_pcm_format_t
+   * @param df TALSA::DataFormat dla którego chcemy uzyskać snd_pcm_format_t.
+   * @return Wartość snd_pcm_format_t odpowiadający podanemu ALSA::DataFormat.
+   */
+  snd_pcm_format_t getFormat(DataFormat df);
+  
+  /**
+   * Funkcja zwracająca ilość bitów potrzebnych do zapisania danego typu danych zgodnie z dokumentacją ALSA.
+   * @param df TALSA::DataFormat, którego rozmiar jest liczony.
+   * @return Ilość bitów, które potrzebne są do zapisania danego formau.
+   */
+  int getSizeOfFormat(DataFormat df);
 
 }
 

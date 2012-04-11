@@ -71,12 +71,8 @@ namespace TALSA
     AccessMode access_mode; //służy do kontroli kierunku przepływu informacji
     DataFormat data_format;
 
-    /**
-     * Zamiana formatu TALSA::DataFormat na snd_pcm_format_t
-     * @param df TALSA::DataForamt dla którego chcemy uzyskać snd_pcm_format_t.
-     * @return Wartość snd_pcm_format_t odpowiadający podanemu ALSA::DataFormat.
-     */
-    snd_pcm_format_t getFormat(DataFormat df);
+
+    
     /**
      * Funkcja pomocnicza, do sprawdzania warunków poprawności danych.
      * @param d Dane do sprawdzenia.

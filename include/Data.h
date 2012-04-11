@@ -56,13 +56,19 @@ namespace TALSA
     DataFormat data_format;
     /** Dane.
      */
-    void *data;
+    char *data;
     /** Ilość próbek możliwa do zapisania w danym sygnale.
      */
     int size;
+    /** Ilość zajętej pamięci
+     */
+    int mem_size;
 //    /** Funkcja zwracająca liczbę próbek, które dana porcja danych może zwierać
 //     */
 //    int size();
+    /** Funkcja alokująca pamięć
+     */
+    void createData();
   };
 }
 
