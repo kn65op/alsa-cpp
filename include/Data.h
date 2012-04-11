@@ -12,7 +12,8 @@
 
 namespace TALSA
 {
-
+  //pozwolenie Device na dostęp do wskaźnika danych.
+  friend class TALSA::Device; 
   /**
    * Klasa odwzorująca dane przesyłane z i do urządzeń.
    */
@@ -26,7 +27,12 @@ namespace TALSA
     Data(const Data& orig) = delete; //not implemented yet
     virtual ~Data();
   private:
-    DataE
+    /** Format danych.
+     */
+    DataFormat data_format;
+    /** Dane.
+     */
+    void *data;
   };
 }
 

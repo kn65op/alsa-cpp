@@ -93,3 +93,51 @@ void Device::setDevice(const std::string dev)
 {
   device = dev;
 }
+
+void Device::write(Data& d) throw (WrongArgument, InvalidOperation)
+{
+  checkData(d);
+  int tmp = snd_pcm_writei(handle, d.data, d.size());
+  if (tmp < 0 )
+  {
+    snd_pcm_recover(handle, tmp, 0) //w przypadku błędu przywracanie stanu do poprawnego
+  }
+  if (tmp < 0)
+  {
+    throw InvalidOperation("Error while writing to device");
+  }
+  else if (tmp < d.size())
+  {
+    throw InvalidOperation("Data write is too short");
+  }
+}
+
+void Device::read(Data& d) throw (WrongArgument, InvalidOperation)
+{
+  checkData(d);
+  int tmp = snd_pcm_readi(handle, d.data, d.size());
+  if (tmp < 0 )
+  {
+    snd_pcm_recover(handle, tmp, 0) //w przypadku błędu przywracanie stanu do poprawnego
+  }
+  if (tmp < 0)
+  {
+    throw InvalidOperation("Error while reading to device");
+  }
+  else if (tmp < d.size())
+  {
+    throw InvalidOperation("Data read is too short");
+  }
+}
+
+void check(Data & d) throw (WrongArgument)
+{
+  if (data_format != d.data_format)
+  {
+    throw WrongArgument("Data format must agree!");
+  }
+  if (!d.size())
+  {
+    throw WrongArgument("Data size must be positive!");
+  }
+}

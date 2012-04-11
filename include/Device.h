@@ -25,7 +25,7 @@ namespace TALSA
     /**
      * Kopiowanie nie jest na razie możliwe.
      */
-    Device(const Device& orig) = delete;//not implemented yet
+    Device(const Device& orig) = delete; //not implemented yet
     virtual ~Device();
     /**
      * Funkcja ustawiająca urządzenie.<br/>
@@ -53,6 +53,16 @@ namespace TALSA
      * @param df TALSA::DataFormat określający format przysyłanych danych.
      */
     void setDataFormat(DataFormat df);
+    /**
+     * Funkcja zapisująca dane z podanego obiektu do urządzenia. Parametry zapisu (np. długość), zależą od podanych danych.
+     * @param d Obiekt, w którym znajdują się dane do zapisu.
+     */
+    void write(Data & d) throw (WrongArgument, InvalidOperation);
+    /**
+     * Funkcja czytająca z urządzenia dane do podanego obiektu. Parametry odczytu (np. długość), zależą od podanych danych. Aktualne dane zostaną nadpisane.
+     * @param d Obiekt, który będzie przechowywał dane.
+     */
+    void read(Data & d) throw (WrongArgument, InvalidOperation);
   private:
     snd_pcm_t *handle; //uchwyt
     std::string device; //urządzenie
@@ -65,6 +75,11 @@ namespace TALSA
      * @return Wartość snd_pcm_format_t odpowiadający podanemu ALSA::DataFormat.
      */
     snd_pcm_format_t getFormat(DataFormat df);
+    /**
+     * Funkcja pomocnicza, do sprawdzania warunków poprawności danych.
+     * @param d Dane do sprawdzenia.
+     */
+    void checkData(Data & d) throw (WrongArgument);
 
     /**
      * Funkcja czyszcząca.
