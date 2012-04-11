@@ -9,8 +9,10 @@
 #define	DEVICE_H
 
 #include "alsa/asoundlib.h"
-#include "extras.h"
 #include <string>
+
+#include "Data.h"
+#include "extras.h"
 
 namespace TALSA
 {
