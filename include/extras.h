@@ -71,7 +71,11 @@ namespace TALSA
   enum class DataFormat
   {
     U8,
-    U16,
+    S8,
+    U16LE,
+    U16BE,
+    S16LE,
+    S16BE,
     U24,
   };
 
@@ -101,8 +105,16 @@ namespace TALSA
       {
         case DataFormat::U8:
           return SND_PCM_FORMAT_U8;
-        case DataFormat::U16:
-          return SND_PCM_FORMAT_U16;
+        case DataFormat::S8:
+          return SND_PCM_FORMAT_S8;
+        case DataFormat::U16LE:
+          return SND_PCM_FORMAT_U16_LE;
+        case DataFormat::U16BE:
+          return SND_PCM_FORMAT_U16_BE;
+        case DataFormat::S16LE:
+          return SND_PCM_FORMAT_S16_LE;
+        case DataFormat::S16BE:
+          return SND_PCM_FORMAT_S16_BE;
         case DataFormat::U24:
           return SND_PCM_FORMAT_U24;
         default:
@@ -120,8 +132,12 @@ namespace TALSA
       switch (df)
       {
         case DataFormat::U8:
+        case DataFormat::S8:
           return 1;
-        case DataFormat::U16:
+        case DataFormat::U16BE:
+        case DataFormat::U16LE:
+        case DataFormat::S16BE:
+        case DataFormat::S16LE:
           return 2;
         case DataFormat::U24:
           return 4; //zgodnie z dokumentacją

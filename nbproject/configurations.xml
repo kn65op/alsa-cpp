@@ -6,6 +6,8 @@
                    projectFiles="true">
       <itemPath>/home/tomko/moje_dziela/alsa-cpp/include/Data.h</itemPath>
       <itemPath>/home/tomko/moje_dziela/alsa-cpp/include/Device.h</itemPath>
+      <itemPath>/home/tomko/moje_dziela/alsa-cpp/src/Recorder.cpp</itemPath>
+      <itemPath>/home/tomko/moje_dziela/alsa-cpp/include/Recorder.h</itemPath>
       <itemPath>/home/tomko/moje_dziela/alsa-cpp/include/extras.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"

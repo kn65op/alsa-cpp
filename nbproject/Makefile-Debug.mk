@@ -34,6 +34,7 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/_ext/713640644/Recorder.o \
 	${OBJECTDIR}/_ext/713640644/Device.o \
 	${OBJECTDIR}/_ext/713640644/Data.o \
 	${OBJECTDIR}/_ext/713640644/extras.o
@@ -62,6 +63,11 @@ LDLIBSOPTIONS=
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libalsa-cpp.so: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.cc} -lasound -shared -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libalsa-cpp.so -fPIC ${OBJECTFILES} ${LDLIBSOPTIONS} 
+
+${OBJECTDIR}/_ext/713640644/Recorder.o: /home/tomko/moje_dziela/alsa-cpp/src/Recorder.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/713640644
+	${RM} $@.d
+	$(COMPILE.cc) -g -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/713640644/Recorder.o /home/tomko/moje_dziela/alsa-cpp/src/Recorder.cpp
 
 ${OBJECTDIR}/_ext/713640644/Device.o: /home/tomko/moje_dziela/alsa-cpp/src/Device.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/713640644
