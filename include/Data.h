@@ -49,6 +49,11 @@ namespace TALSA
      * @return Format danych.
      */
     DataFormat getDataFormat() const;
+    /**
+     * 
+     * @return 
+     */
+    void * operator*();
 
   private:
     /** Format danych.
