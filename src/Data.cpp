@@ -66,7 +66,7 @@ void Data::createData()
   }
 }
 
-void * Data::
+void * Data::operator *()
 {
   return data;
 }

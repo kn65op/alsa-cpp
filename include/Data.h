@@ -18,9 +18,6 @@ namespace TALSA
    */
   class Data
   {
-    //pozwolenie Device na dostęp do wskaźnika danych.
-    friend class Device;
-
   public:
     Data();
     /**
@@ -49,6 +46,7 @@ namespace TALSA
      * @return Format danych.
      */
     DataFormat getDataFormat() const;
+    void * operator*();
 
   private:
     /** Format danych.
@@ -63,9 +61,9 @@ namespace TALSA
     /** Ilość zajętej pamięci
      */
     int mem_size;
-//    /** Funkcja zwracająca liczbę próbek, które dana porcja danych może zwierać
-//     */
-//    int size();
+    //    /** Funkcja zwracająca liczbę próbek, które dana porcja danych może zwierać
+    //     */
+    //    int size();
     /** Funkcja alokująca pamięć
      */
     void createData();
