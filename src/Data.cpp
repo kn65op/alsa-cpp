@@ -65,3 +65,8 @@ void Data::createData()
     data = new char [new_mem];
   }
 }
+
+void * Data::
+{
+  return data;
+}
