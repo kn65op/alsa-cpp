@@ -4,11 +4,10 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
-      <itemPath>/home/tomko/moje_dziela/alsa-cpp/include/Data.h</itemPath>
-      <itemPath>/home/tomko/moje_dziela/alsa-cpp/include/Device.h</itemPath>
-      <itemPath>/home/tomko/moje_dziela/alsa-cpp/src/Recorder.cpp</itemPath>
-      <itemPath>/home/tomko/moje_dziela/alsa-cpp/include/Recorder.h</itemPath>
-      <itemPath>/home/tomko/moje_dziela/alsa-cpp/include/extras.h</itemPath>
+      <itemPath>include/Data.h</itemPath>
+      <itemPath>include/Device.h</itemPath>
+      <itemPath>include/Recorder.h</itemPath>
+      <itemPath>include/extras.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -17,9 +16,10 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
-      <itemPath>/home/tomko/moje_dziela/alsa-cpp/src/Data.cpp</itemPath>
-      <itemPath>/home/tomko/moje_dziela/alsa-cpp/src/Device.cpp</itemPath>
-      <itemPath>/home/tomko/moje_dziela/alsa-cpp/src/extras.cpp</itemPath>
+      <itemPath>src/Data.cpp</itemPath>
+      <itemPath>src/Device.cpp</itemPath>
+      <itemPath>src/Recorder.cpp</itemPath>
+      <itemPath>src/extras.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"
