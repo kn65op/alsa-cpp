@@ -18,8 +18,6 @@ namespace TALSA
    */
   class Data
   {
-    //pozwolenie Device na dostęp do wskaźnika danych.
-    friend class Device;
 
   public:
     Data();

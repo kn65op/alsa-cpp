@@ -89,7 +89,7 @@ void Device::write(Data& d) throw (WrongArgument, InvalidOperation)
     throw InvalidOperation("Device hasn't been opened for writing");
   }
   checkData(d);
-  int tmp = snd_pcm_writei(handle, d.data, d.getSize());
+  int tmp = snd_pcm_writei(handle, *d, d.getSize());
   if (tmp < 0)
   {
     snd_pcm_recover(handle, tmp, 0); //w przypadku błędu przywracanie stanu do poprawnego
@@ -111,7 +111,7 @@ void Device::read(Data& d) throw (WrongArgument, InvalidOperation)
     throw InvalidOperation("Device hasn't been opened for reading");
   }
   checkData(d);
-  int tmp = snd_pcm_readi(handle, d.data, d.getSize());
+  int tmp = snd_pcm_readi(handle, *d, d.getSize());
   if (tmp < 0)
   {
     snd_pcm_recover(handle, tmp, 0); //w przypadku błędu przywracanie stanu do poprawnego
@@ -128,7 +128,7 @@ void Device::read(Data& d) throw (WrongArgument, InvalidOperation)
 
 void Device::checkData(Data & d) throw (WrongArgument)
 {
-  if (data_format != d.data_format)
+  if (data_format != d.getDataFormat())
   {
     throw WrongArgument("Data format must agree!");
   }
@@ -136,7 +136,7 @@ void Device::checkData(Data & d) throw (WrongArgument)
   {
     throw WrongArgument("Data size must be positive!");
   }
-  if (!d.data)
+  if (*(d))
   {
     throw WrongArgument("Data must be allocated!");
   }

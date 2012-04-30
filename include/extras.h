@@ -31,6 +31,11 @@ namespace TALSA
     WrongArgument(std::string mes) : message(mes)
     {
     };
+
+    std::string getMessage() const
+    {
+      return message;
+    }
   private:
     std::string message;
   };
@@ -51,6 +56,11 @@ namespace TALSA
     InvalidOperation(std::string mes) : message(mes)
     {
     };
+
+    std::string getMessage() const
+    {
+      return message;
+    }
   private:
     std::string message;
   };
