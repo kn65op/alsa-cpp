@@ -136,7 +136,7 @@ void Device::checkData(Data & d) throw (WrongArgument)
   {
     throw WrongArgument("Data size must be positive!");
   }
-  if (*(d))
+  if (!*(d))
   {
     throw WrongArgument("Data must be allocated!");
   }
