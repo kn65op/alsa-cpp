@@ -1,4 +1,5 @@
 /* 
+ * 
  * File:   Data.h
  * Author: tomko
  *
@@ -48,8 +49,8 @@ namespace TALSA
      */
     DataFormat getDataFormat() const;
     /**
-     * 
-     * @return 
+     * Funkcja zwracająca wskaźnik do danych.
+     * @return Wskaźnik do danych.
      */
     void * operator*();
 
@@ -59,7 +60,7 @@ namespace TALSA
     DataFormat data_format;
     /** Dane.
      */
-    char *data;
+    std::uint8_t *data;
     /** Ilość próbek możliwa do zapisania w danym sygnale.
      */
     int size;

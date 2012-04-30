@@ -5,6 +5,8 @@
  * Created on 9 kwiecień 2012, 15:50
  */
 
+#include <stdint.h>
+
 #include "../include/Data.h"
 
 using namespace TALSA;
@@ -62,7 +64,7 @@ void Data::createData()
     {
       delete [] data;
     }
-    data = new char [new_mem];
+    data = new std::uint8_t [new_mem];
   }
 }
 
