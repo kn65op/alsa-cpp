@@ -53,6 +53,9 @@ namespace TALSA
      * @return Wskaźnik do danych.
      */
     void * operator*();
+    /**
+     * Funkcja usuwająca wartość średnią z sygnału.
+     */
     void removeConstantComponent();
     /**
      * usunięcie wartości średniej - ok
