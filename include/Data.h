@@ -53,6 +53,15 @@ namespace TALSA
      * @return Wskaźnik do danych.
      */
     void * operator*();
+    void removeConstantComponent();
+    /**
+     * usunięcie wartości średniej - ok
+     * skalowanie / normalizacja
+     * tłumienie odbić
+     * tłumienie zakłóceń i szumu
+     * preemfaza (wzmacnianie wyższych częstotliwości
+     * podział na słowa
+     */
 
   private:
     /** Format danych.
@@ -60,7 +69,7 @@ namespace TALSA
     DataFormat data_format;
     /** Dane.
      */
-    std::uint8_t *data;
+    std::int8_t *data;
     /** Ilość próbek możliwa do zapisania w danym sygnale.
      */
     int size;

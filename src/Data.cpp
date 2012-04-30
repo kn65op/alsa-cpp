@@ -7,6 +7,9 @@
 
 #include <stdint.h>
 
+//TODO usunąć
+#include <iostream>
+
 #include "../include/Data.h"
 
 using namespace TALSA;
@@ -34,7 +37,6 @@ int Data::getSize() const
 {
   return size;
 }
-
 
 DataFormat Data::getDataFormat() const
 {
@@ -64,11 +66,26 @@ void Data::createData()
     {
       delete [] data;
     }
-    data = new std::uint8_t [new_mem];
+    data = new std::int8_t [new_mem];
+    mem_size = new_mem;
   }
 }
 
 void * Data::operator *()
 {
   return data;
+}
+
+void Data::removeConstantComponent()
+{
+  double avg = 0;
+  for (int i = 0; i < mem_size; i++)
+  {
+    avg += (double)data[i] / (double)mem_size;
+  }
+  std::cout << avg << "\n";
+  for (int i=0; i<mem_size; i++)
+  {
+    data[i] -= (int)avg;
+  }
 }
