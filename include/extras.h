@@ -32,6 +32,10 @@ namespace TALSA
     {
     };
 
+    /**
+     * Funkcja zwracająca wiadomość przekazaną przez wyjątek.
+     * @return Wiadomość przekazana przez wyjątek
+     */
     std::string getMessage() const
     {
       return message;
@@ -57,6 +61,10 @@ namespace TALSA
     {
     };
 
+    /**
+     * Funkcja zwracająca wiadomość przekazaną przez wyjątek.
+     * @return Wiadomość przekazana przez wyjątek
+     */
     std::string getMessage() const
     {
       return message;

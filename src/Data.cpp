@@ -62,7 +62,8 @@ void Data::createData()
     {
       delete [] data;
     }
-    data = new char [new_mem];
+    data = new std::int8_t [new_mem];
+    mem_size = new_mem;
   }
 }
 
@@ -71,4 +72,16 @@ void * Data::operator *()
   return data;
 }
 
-void Data::
+void Data::removeConstantComponent()
+{
+  double avg = 0;
+  for (int i = 0; i < mem_size; i++)
+  {
+    avg += (double)data[i] / (double)mem_size;
+  }
+  std::cout << avg << "\n";
+  for (int i=0; i<mem_size; i++)
+  {
+    data[i] -= (int)avg;
+  }
+}

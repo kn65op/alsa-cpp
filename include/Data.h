@@ -55,11 +55,23 @@ namespace TALSA
      */
     void * operator*();
     /**
+     * Funkcja usuwająca wartość średnią z sygnału.
+     */
+    void removeConstantComponent();
+    /**
+     * usunięcie wartości średniej - ok
+     * skalowanie / normalizacja
+     * tłumienie odbić
+     * tłumienie zakłóceń i szumu
+     * preemfaza (wzmacnianie wyższych częstotliwości
+     * podział na słowa
+     */
+
+	/**
      * Funkcja zapisująca czyste wartości do pliku.
      * @param filename Nazwa pliku, do którego chcemy zapisać.
      */
     void saveRawDataToFile(std::string filename);
-
   private:
     /** Format danych.
      */
