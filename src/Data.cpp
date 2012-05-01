@@ -8,6 +8,7 @@
 #include "../include/Data.h"
 
 #include <fstream>
+#include <cmath>
 
 //TODO usunąć
 #include <iostream>
@@ -37,7 +38,6 @@ int Data::getSize() const
 {
   return size;
 }
-
 
 DataFormat Data::getDataFormat() const
 {
@@ -82,12 +82,12 @@ void Data::removeConstantComponent()
   double avg = 0;
   for (int i = 0; i < mem_size; i++)
   {
-    avg += (double)data[i] / (double)mem_size;
+    avg += (double) data[i] / (double) mem_size;
   }
   std::cout << avg << "\n";
-  for (int i=0; i<mem_size; i++)
+  for (int i = 0; i < mem_size; i++)
   {
-    data[i] -= (int)avg;
+    data[i] -= (int) avg;
   }
 }
 
@@ -95,9 +95,31 @@ void Data::saveRawDataToFile(std::string filename)
 {
   std::ofstream file(filename, std::ios::out);
   {
-    for (int i =0; i<mem_size; i++)
+    for (int i = 0; i < mem_size; i++)
     {
-      file << data[i] << "\n";
+      file << (int) data[i] << "\n";
     }
   }
+  file.close();
+}
+
+void Data::test()
+{
+  std::ofstream file("test.dat", std::ios::out);
+  double t = 0.020; //czas trwania okna to 20 ms
+  int n = 0.02  * 48000.0;
+  int nint = 2 / t;
+  for (int j = 0;j < nint; ++j)
+  {
+    int energy = 0;
+    for (int i = 1; i < n; ++i) //dla każdej próbki
+    {
+      if (data[i+j*n] * data[i+j*n-1] < 0)
+      {
+	++energy;	
+      }
+    }
+    file << energy << "\n";
+  }
+  file.close();
 }

@@ -20,7 +20,6 @@ namespace TALSA
    */
   class Data
   {
-
   public:
     Data();
     /**
@@ -67,11 +66,13 @@ namespace TALSA
      * podział na słowa
      */
 
-	/**
+    /**
      * Funkcja zapisująca czyste wartości do pliku.
      * @param filename Nazwa pliku, do którego chcemy zapisać.
      */
     void saveRawDataToFile(std::string filename);
+
+    void test();
   private:
     /** Format danych.
      */
@@ -85,9 +86,9 @@ namespace TALSA
     /** Ilość zajętej pamięci
      */
     int mem_size;
-//    /** Funkcja zwracająca liczbę próbek, które dana porcja danych może zwierać
-//     */
-//    int size();
+    //    /** Funkcja zwracająca liczbę próbek, które dana porcja danych może zwierać
+    //     */
+    //    int size();
     /** Funkcja alokująca pamięć
      */
     void createData();
