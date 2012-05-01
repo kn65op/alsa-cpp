@@ -165,6 +165,9 @@ namespace TALSA
     }
   };
 
+  /** Liczba przejść przez 0 dla szumu spowodowanego złym mikrofonem.
+   */
+  extern int MAX_NOISE_ZERO_CROSSING;
 }
 
 

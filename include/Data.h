@@ -71,6 +71,33 @@ namespace TALSA
      * @param filename Nazwa pliku, do którego chcemy zapisać.
      */
     void saveRawDataToFile(std::string filename);
+    /**
+     * Funkcja ustawiająca podział na ramki.
+     * @param length Długość ramki w sekundach.
+     * @param overlap Procentowe określenie zachodzenia ramek na siebie.
+     */
+    void setFrameLength(double length, double overlap);
+    /**
+     * Funkcja określająca czy dana ramka zawiera w sobie mowę. Określanie jest na podstawie liczby przejść przez 0 (więcej niż 3).
+     * @param n Numer ramki.
+     * @return true, jeśli w danej ramce stwierdzono mowę, false w przeciwnym wypadku.
+     */
+    bool isFrameWithSpeech(int n);
+    /**
+     * Ustawienie częstotliwości próbkowania.
+     * @param sf Częstotliwość próbkowania w Hz.
+     */
+    void setSampleFrequency(int sf);
+    /**
+     * Odczytanie częstotliwości próbkowania.
+     * @return Częstotliwość próbkowania w Hz.
+     */
+    int getSampleFrequency() const;
+    /**
+     * Funkcja zwracająca liczbę możliwych ramek.
+     * @return Liczba możliwych ramek.
+     */
+    int getWindowsNumber() const;
 
     void test();
   private:
@@ -92,6 +119,21 @@ namespace TALSA
     /** Funkcja alokująca pamięć
      */
     void createData();
+    /** Długość ramki w s.
+     */
+    double window_length_in_s;
+    /** zachodzenie ramek
+     */
+    double window_overlap;
+    /** punkt startu kolejnej ramki
+     */
+    int window_start;
+    /** długość ramki w próbkach
+     */
+    int window_length;
+    /** częstotliwość próbkowania
+     */
+    int sample_frequency;
   };
 }
 

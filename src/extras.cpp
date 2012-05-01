@@ -1,7 +1,9 @@
 #include "../include/extras.h"
 
-using namespace TALSA;
-
+namespace TALSA
+{
+  int MAX_NOISE_ZERO_CROSSING = 2;
+}
 //snd_pcm_format_t DataFormatHelper::getFormat(DataFormat df)
 //{
 //  switch (df)
