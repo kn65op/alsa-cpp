@@ -78,7 +78,7 @@ namespace TALSA
     DataFormat data_format;
     /** Dane.
      */
-    char *data;
+    std::int8_t *data;
     /** Ilość próbek możliwa do zapisania w danym sygnale.
      */
     int size;

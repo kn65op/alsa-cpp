@@ -7,6 +7,11 @@
 
 #include "../include/Data.h"
 
+#include <fstream>
+
+//TODO usunąć
+#include <iostream>
+
 using namespace TALSA;
 
 Data::Data() : size(0)
@@ -83,5 +88,16 @@ void Data::removeConstantComponent()
   for (int i=0; i<mem_size; i++)
   {
     data[i] -= (int)avg;
+  }
+}
+
+void Data::saveRawDataToFile(std::string filename)
+{
+  std::ofstream file(filename, std::ios::out);
+  {
+    for (int i =0; i<mem_size; i++)
+    {
+      file << data[i] << "\n";
+    }
   }
 }
