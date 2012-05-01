@@ -70,3 +70,5 @@ void * Data::operator *()
 {
   return data;
 }
+
+void Data::

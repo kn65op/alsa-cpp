@@ -34,10 +34,10 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/_ext/713640644/Recorder.o \
-	${OBJECTDIR}/_ext/713640644/Device.o \
-	${OBJECTDIR}/_ext/713640644/Data.o \
-	${OBJECTDIR}/_ext/713640644/extras.o
+	${OBJECTDIR}/src/extras.o \
+	${OBJECTDIR}/src/Recorder.o \
+	${OBJECTDIR}/src/Device.o \
+	${OBJECTDIR}/src/Data.o
 
 
 # C Compiler Flags
@@ -64,25 +64,25 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libalsa-cpp.so: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.cc} -shared -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libalsa-cpp.so -fPIC ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
-${OBJECTDIR}/_ext/713640644/Recorder.o: /home/tomko/moje_dziela/alsa-cpp/src/Recorder.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/713640644
+${OBJECTDIR}/src/extras.o: src/extras.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/713640644/Recorder.o /home/tomko/moje_dziela/alsa-cpp/src/Recorder.cpp
+	$(COMPILE.cc) -O2 -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/extras.o src/extras.cpp
 
-${OBJECTDIR}/_ext/713640644/Device.o: /home/tomko/moje_dziela/alsa-cpp/src/Device.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/713640644
+${OBJECTDIR}/src/Recorder.o: src/Recorder.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/713640644/Device.o /home/tomko/moje_dziela/alsa-cpp/src/Device.cpp
+	$(COMPILE.cc) -O2 -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/Recorder.o src/Recorder.cpp
 
-${OBJECTDIR}/_ext/713640644/Data.o: /home/tomko/moje_dziela/alsa-cpp/src/Data.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/713640644
+${OBJECTDIR}/src/Device.o: src/Device.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/713640644/Data.o /home/tomko/moje_dziela/alsa-cpp/src/Data.cpp
+	$(COMPILE.cc) -O2 -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/Device.o src/Device.cpp
 
-${OBJECTDIR}/_ext/713640644/extras.o: /home/tomko/moje_dziela/alsa-cpp/src/extras.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/713640644
+${OBJECTDIR}/src/Data.o: src/Data.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/713640644/extras.o /home/tomko/moje_dziela/alsa-cpp/src/extras.cpp
+	$(COMPILE.cc) -O2 -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/Data.o src/Data.cpp
 
 # Subprojects
 .build-subprojects:

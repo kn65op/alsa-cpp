@@ -10,6 +10,8 @@
 
 #include "extras.h"
 
+#include <string>
+
 namespace TALSA
 {
 
@@ -48,10 +50,15 @@ namespace TALSA
      */
     DataFormat getDataFormat() const;
     /**
-     * 
-     * @return 
+     * Operator bezpośredniego dostępu do pamięci.
+     * @return Wskaźnik typu void, wskazujący na początek pamięci.
      */
     void * operator*();
+    /**
+     * Funkcja zapisująca czyste wartości do pliku.
+     * @param filename Nazwa pliku, do którego chcemy zapisać.
+     */
+    void saveRawDataToFile(std::string filename);
 
   private:
     /** Format danych.
