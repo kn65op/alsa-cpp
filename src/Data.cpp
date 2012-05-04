@@ -19,7 +19,8 @@ using namespace TALSA;
 Data::Data() : size(0)
 {
   data = 0;
-  data_feature = 0;
+  data_before_fft = 0;
+  fft = false;
 }
 
 Data::~Data()
@@ -28,9 +29,13 @@ Data::~Data()
   {
     delete [] data;
   }
-  if (data_feature)
+  if (data_before_fft)
   {
-    delete [] data_feature;
+    delete [] data_before_fft;
+  }
+  if (data_after_fft)
+  {
+    delete [] data_after_fft;
   }
 }
 
@@ -199,8 +204,12 @@ int Data::getWindowsNumber() const
 std::vector<double> Data::getMFCCFromFrame(int n)
 {
   int start_fragment = n * window_start;
-  int end_fragment = (n+1) * window_start;
+  int end_fragment = (n + 1) * window_start;
   int length = end_fragment - start_fragment;
+  if (!fft)
+  {
+    initFFT(length);
+  }
   //skalowanie
   scale(start_fragment, end_fragment);
   //preemfaza
@@ -208,12 +217,12 @@ std::vector<double> Data::getMFCCFromFrame(int n)
   //okienkowanie
   HammingWindow(length);
   //fft
-  fft(length);
+  calcFFT(length);
   //liczenie mfcc
   std::vector<double> tmp(12);
-  for (int i =0; i < 12; ++i)
+  for (int i = 0; i < 12; ++i)
   {
-    tmp[i] = GetCoefficient(data_feature, sample_frequency, 12, 128, i);
+    tmp[i] = GetCoefficient(data_after_fft, sample_frequency, 12, 64, i);
   }
   return tmp;
 }
@@ -223,19 +232,19 @@ void Data::scale(int a, int b)
   double max = 0;
   double tmp;
   int size = b - a;
-  if (!data_feature)
+  if (!data_before_fft)
   {
-    data_feature = new double [size];
+    data_before_fft = new double [size];
   }
   for (int i = a; i < b; ++i)
   {
-    data_feature[i - a] = data[i] - TALSA::SIGNAL0;
-    if ((tmp = fabs(data_feature[i-a])) > max )
+    data_before_fft[i - a] = data[i] - TALSA::SIGNAL0;
+    if ((tmp = fabs(data_before_fft[i - a])) > max)
     {
       max = tmp;
     }
   }
-  for (int i=0; i < size; ++i)
+  for (int i = 0; i < size; ++i)
   {
     data[i] = 100 * data[i] / max;
   }
@@ -251,7 +260,18 @@ void Data::HammingWindow(int length)
   //TODO dopisać
 }
 
-void Data::fft(int length)
+void Data::initFFT(int length)
 {
-  
+  fft = true;
+  data_after_fft = new double [length];
+  plan = fftw_plan_r2r_1d(128, data_before_fft, data_after_fft, FFTW_R2HC, 0);
+}
+
+void Data::calcFFT(int length)
+{
+  fftw_execute(plan);
+  for (int i = 0; i < length / 2; i++) //zamiana na moduł
+  {
+    data_after_fft[i] = sqrt(pow(data[i], 2) + pow(data[length - i], 2));
+  }
 }

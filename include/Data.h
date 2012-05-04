@@ -12,6 +12,7 @@
 
 #include <string>
 #include <vector>
+#include <fftw3.h>
 
 namespace TALSA
 {
@@ -147,9 +148,18 @@ namespace TALSA
     /** częstotliwość próbkowania
      */
     int sample_frequency;
-    /** wskaźnik na dane używane przy ekstracji cech 
+    /** wskaźnik na dane używane przy ekstracji cech  przed fft
      */
-    double *data_feature;
+    double *data_before_fft;
+    /** wskaźnik na dane używane przy ekstracji cech  po fft
+     */
+    double *data_after_fft;
+    /** Czy jest plan fft
+     */
+    bool fft;
+    /** plan
+     */
+    fftw_plan plan;
     /**
      * Skalowanie fragmentu dźwięku.
      * @param a początek fragmentu.
@@ -170,7 +180,11 @@ namespace TALSA
      * Liczenie transformaty Fouriera fragmentu dźwięku, znajdującego się w zmiennej data_feature.
      * @param length Długość fragmentu.
      */
-    void fft(int length);
+    void calcFFT(int length);
+    /**
+     * Funkcja tworząca plan fftw.
+     */
+    void initFFT(int length);
   };
 }
 
