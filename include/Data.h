@@ -157,23 +157,20 @@ namespace TALSA
      */
     void scale(int a, int b);
     /**
-     * Preemfaza fragmentu dźwięku.
-     * @param a początek fragmentu.
-     * @param b koniec fragmentu.
+     * Preemfaza fragmentu dźwięku, znajdującego się w zmiennej data_feature.
+     * @param length Długość fragmentu.
      */
-    void preemphasis(int a, int b);
+    void preemphasis(int length);
     /**
-     * Okienkowanie fragmentu dźwięku.
-     * @param a początek fragmentu.
-     * @param b koniec fragmentu.
+     * Okienkowanie fragmentu dźwięku, znajdującego się w zmiennej data_feature.
+     * @param length Długość fragmentu.
      */
-    void HammingWindow(int a, int b);
+    void HammingWindow(int length);
     /**
-     * Liczenie transformaty Fouriera fragmentu.
-     * @param a początek fragmentu.
-     * @param b koniec fragmentu.
+     * Liczenie transformaty Fouriera fragmentu dźwięku, znajdującego się w zmiennej data_feature.
+     * @param length Długość fragmentu.
      */
-    void fft(int a, int b);
+    void fft(int length);
   };
 }
 

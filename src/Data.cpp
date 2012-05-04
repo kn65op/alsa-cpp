@@ -19,6 +19,7 @@ using namespace TALSA;
 Data::Data() : size(0)
 {
   data = 0;
+  data_feature = 0;
 }
 
 Data::~Data()
@@ -26,6 +27,10 @@ Data::~Data()
   if (data)
   {
     delete [] data;
+  }
+  if (data_feature)
+  {
+    delete [] data_feature;
   }
 }
 
@@ -195,20 +200,58 @@ std::vector<double> Data::getMFCCFromFrame(int n)
 {
   int start_fragment = n * window_start;
   int end_fragment = (n+1) * window_start;
+  int length = end_fragment - start_fragment;
   //skalowanie
   scale(start_fragment, end_fragment);
   //preemfaza
-  preemphasis(start_fragment, end_fragment);
+  preemphasis(length);
   //okienkowanie
-  HammingWindow(start_fragment, end_fragment);
+  HammingWindow(length);
   //fft
-  fft(start_fragment, end_fragment);
+  fft(length);
   //liczenie mfcc
   std::vector<double> tmp(12);
-  for (int i =0; i < 12; i++)
+  for (int i =0; i < 12; ++i)
   {
     tmp[i] = GetCoefficient(data_feature, sample_frequency, 12, 128, i);
   }
   return tmp;
 }
 
+void Data::scale(int a, int b)
+{
+  double max = 0;
+  double tmp;
+  int size = b - a;
+  if (!data_feature)
+  {
+    data_feature = new double [size];
+  }
+  for (int i = a; i < b; ++i)
+  {
+    data_feature[i - a] = data[i] - TALSA::SIGNAL0;
+    if ((tmp = fabs(data_feature[i-a])) > max )
+    {
+      max = tmp;
+    }
+  }
+  for (int i=0; i < size; ++i)
+  {
+    data[i] = 100 * data[i] / max;
+  }
+}
+
+void Data::preemphasis(int length)
+{
+  //TODO dopisać
+}
+
+void Data::HammingWindow(int length)
+{
+  //TODO dopisać
+}
+
+void Data::fft(int length)
+{
+  
+}

@@ -88,7 +88,7 @@ ${OBJECTDIR}/src/Data.o: src/Data.cpp
 ${OBJECTDIR}/libmfcc/libmfcc.o: libmfcc/libmfcc.c 
 	${MKDIR} -p ${OBJECTDIR}/libmfcc
 	${RM} $@.d
-	$(COMPILE.c) -g -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/libmfcc/libmfcc.o libmfcc/libmfcc.c
+	$(COMPILE.cc) -g -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/libmfcc/libmfcc.o libmfcc/libmfcc.c
 
 # Subprojects
 .build-subprojects:
