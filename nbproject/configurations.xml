@@ -8,7 +8,7 @@
       <itemPath>include/Device.h</itemPath>
       <itemPath>include/Recorder.h</itemPath>
       <itemPath>include/extras.h</itemPath>
-      <itemPath>../libmfcc/libmfcc.h</itemPath>
+      <itemPath>libmfcc/libmfcc.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -21,7 +21,7 @@
       <itemPath>src/Device.cpp</itemPath>
       <itemPath>src/Recorder.cpp</itemPath>
       <itemPath>src/extras.cpp</itemPath>
-      <itemPath>../libmfcc/libmfcc.c</itemPath>
+      <itemPath>libmfcc/libmfcc.c</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"

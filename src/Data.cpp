@@ -9,6 +9,7 @@
 
 #include <fstream>
 #include <cmath>
+#include "../libmfcc/libmfcc.h"
 
 //TODO usunąć
 #include <iostream>
@@ -127,7 +128,7 @@ void Data::test()
   file.close();
 }
 
-void Data::setFrameLength(double length, double overlap)
+/*/void Data::setFrameLength(double length, double overlap)
 {
   window_length_in_s = length;
   window_overlap = overlap;
@@ -135,6 +136,12 @@ void Data::setFrameLength(double length, double overlap)
   //  std::cout << window_length << "\n";
   window_start = window_length * (1 - overlap);
   //  std::cout << window_start << "\n";
+}**/
+
+void Data::setFrameLength(int length, int overlap)
+{
+  window_length = length;
+  window_start = length - overlap;
 }
 
 int Data::getSampleFrequency() const
@@ -181,5 +188,27 @@ int Data::getWindowsNumber() const
   int i = 1;
   int start = 0;
   while ((start = window_start * i++) + window_length < mem_size); //liczenie ilości ramek
-  return --i;
+  return i;
 }
+
+std::vector<double> Data::getMFCCFromFrame(int n)
+{
+  int start_fragment = n * window_start;
+  int end_fragment = (n+1) * window_start;
+  //skalowanie
+  scale(start_fragment, end_fragment);
+  //preemfaza
+  preemphasis(start_fragment, end_fragment);
+  //okienkowanie
+  HammingWindow(start_fragment, end_fragment);
+  //fft
+  fft(start_fragment, end_fragment);
+  //liczenie mfcc
+  std::vector<double> tmp(12);
+  for (int i =0; i < 12; i++)
+  {
+    tmp[i] = GetCoefficient(data_feature, sample_frequency, 12, 128, i);
+  }
+  return tmp;
+}
+

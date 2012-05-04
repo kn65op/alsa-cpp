@@ -11,6 +11,7 @@
 #include "extras.h"
 
 #include <string>
+#include <vector>
 
 namespace TALSA
 {
@@ -59,7 +60,7 @@ namespace TALSA
     void removeConstantComponent();
     /**
      * usunięcie wartości średniej - ok
-     * skalowanie / normalizacja - chyba nie trzeba
+     * skalowanie / normalizacja
      * tłumienie odbić - nie ma
      * tłumienie zakłóceń i szumu - nie ma	
      * preemfaza (wzmacnianie wyższych częstotliwości
@@ -76,13 +77,25 @@ namespace TALSA
      * @param length Długość ramki w sekundach.
      * @param overlap Procentowe określenie zachodzenia ramek na siebie.
      */
-    void setFrameLength(double length, double overlap);
+    //    void setFrameLength(double length, double overlap);
+    /**
+     * Funkcja ustawiająca podział na ramki.
+     * @param length Długość ramki jako liczba próbek.
+     * @param overlap Nachodzenie ramek jako liczba próbek.
+     */
+    void setFrameLength(int length, int overlap);
     /**
      * Funkcja określająca czy dana ramka zawiera w sobie mowę. Określanie jest na podstawie energii.
      * @param n Numer ramki.
      * @return true, jeśli w danej ramce stwierdzono mowę, false w przeciwnym wypadku.
      */
     bool isFrameWithSpeech(int n);
+    /**
+     * Funkcja zwracająca 12 współczynników MFCC otrzymane z danej ramki.
+     * @param n Numer ramki.
+     * @return std::vector  12 liczb double, będących współczynnikami.
+     */
+    std::vector<double> getMFCCFromFrame(int n);
     /**
      * Ustawienie częstotliwości próbkowania.
      * @param sf Częstotliwość próbkowania w Hz.
@@ -134,6 +147,33 @@ namespace TALSA
     /** częstotliwość próbkowania
      */
     int sample_frequency;
+    /** wskaźnik na dane używane przy ekstracji cech 
+     */
+    double *data_feature;
+    /**
+     * Skalowanie fragmentu dźwięku.
+     * @param a początek fragmentu.
+     * @param b koniec fragmentu.
+     */
+    void scale(int a, int b);
+    /**
+     * Preemfaza fragmentu dźwięku.
+     * @param a początek fragmentu.
+     * @param b koniec fragmentu.
+     */
+    void preemphasis(int a, int b);
+    /**
+     * Okienkowanie fragmentu dźwięku.
+     * @param a początek fragmentu.
+     * @param b koniec fragmentu.
+     */
+    void HammingWindow(int a, int b);
+    /**
+     * Liczenie transformaty Fouriera fragmentu.
+     * @param a początek fragmentu.
+     * @param b koniec fragmentu.
+     */
+    void fft(int a, int b);
   };
 }
 
