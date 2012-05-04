@@ -20,6 +20,7 @@ Data::Data() : size(0)
 {
   data = 0;
   data_before_fft = 0;
+  data_after_fft = 0;
   fft = false;
 }
 
@@ -28,14 +29,21 @@ Data::~Data()
   if (data)
   {
     delete [] data;
+    data = 0;
   }
   if (data_before_fft)
   {
     delete [] data_before_fft;
+    data_before_fft = 0;
   }
   if (data_after_fft)
   {
-    delete [] data_after_fft;
+    //delete [] data_after_fft;
+    data_after_fft = 0;
+  }
+  if (fft)
+  {
+    fftw_destroy_plan(plan);
   }
 }
 
@@ -119,8 +127,8 @@ void Data::saveRawDataToFile(std::string filename)
 void Data::test()
 {
   std::ofstream file("test.dat", std::ios::out);
-  double t = 0.020; //czas trwania okna to 20 ms
-  int n = 0.02 * 8000.0;
+  double t = 0.016; //czas trwania okna to 20 ms
+  int n = 0.016 * 8000.0;
   int nint = 5 / t;
   for (int j = 0; j < nint; ++j)
   {
@@ -204,7 +212,7 @@ int Data::getWindowsNumber() const
 std::vector<double> Data::getMFCCFromFrame(int n)
 {
   int start_fragment = n * window_start;
-  int end_fragment = (n + 1) * window_start;
+  int end_fragment = start_fragment + window_length;
   int length = end_fragment - start_fragment;
   if (!fft)
   {
@@ -222,7 +230,7 @@ std::vector<double> Data::getMFCCFromFrame(int n)
   std::vector<double> tmp(12);
   for (int i = 0; i < 12; ++i)
   {
-    tmp[i] = GetCoefficient(data_after_fft, sample_frequency, 12, 64, i);
+    tmp[i] = GetCoefficient(data_after_fft, sample_frequency, 12, 65, i);
   }
   return tmp;
 }
@@ -232,10 +240,6 @@ void Data::scale(int a, int b)
   double max = 0;
   double tmp;
   int size = b - a;
-  if (!data_before_fft)
-  {
-    data_before_fft = new double [size];
-  }
   for (int i = a; i < b; ++i)
   {
     data_before_fft[i - a] = data[i] - TALSA::SIGNAL0;
@@ -246,7 +250,7 @@ void Data::scale(int a, int b)
   }
   for (int i = 0; i < size; ++i)
   {
-    data[i] = 100 * data[i] / max;
+    data_before_fft[i] = 100 * data_before_fft[i] / max;
   }
 }
 
@@ -257,21 +261,26 @@ void Data::preemphasis(int length)
 
 void Data::HammingWindow(int length)
 {
-  //TODO dopisać
+  for (int i = 0; i < length; ++i)
+  {
+    data_before_fft[i] = (0.54 - 0.46 * cos((2 * M_PI * i) / (length - 1))) * data_before_fft[i];
+  }
 }
 
 void Data::initFFT(int length)
 {
   fft = true;
   data_after_fft = new double [length];
-  plan = fftw_plan_r2r_1d(128, data_before_fft, data_after_fft, FFTW_R2HC, 0);
+  data_before_fft = new double [length];
+  plan = fftw_plan_r2r_1d(128, data_before_fft, data_after_fft, FFTW_R2HC, FFTW_ESTIMATE);
 }
 
 void Data::calcFFT(int length)
 {
   fftw_execute(plan);
-  for (int i = 0; i < length / 2; i++) //zamiana na moduł
+  //liczenie mfcc
+  for (int i = 1; i < length / 2; ++i) //zamiana na moduł
   {
-    data_after_fft[i] = sqrt(pow(data[i], 2) + pow(data[length - i], 2));
+    data_after_fft[i] = sqrt(pow(data_after_fft[i], 2) + pow(data_after_fft[length - i], 2));
   }
 }
