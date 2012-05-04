@@ -59,9 +59,9 @@ namespace TALSA
     void removeConstantComponent();
     /**
      * usunięcie wartości średniej - ok
-     * skalowanie / normalizacja
-     * tłumienie odbić
-     * tłumienie zakłóceń i szumu
+     * skalowanie / normalizacja - chyba nie trzeba
+     * tłumienie odbić - nie ma
+     * tłumienie zakłóceń i szumu - nie ma	
      * preemfaza (wzmacnianie wyższych częstotliwości
      * podział na słowa
      */
@@ -78,7 +78,7 @@ namespace TALSA
      */
     void setFrameLength(double length, double overlap);
     /**
-     * Funkcja określająca czy dana ramka zawiera w sobie mowę. Określanie jest na podstawie liczby przejść przez 0 (więcej niż 3).
+     * Funkcja określająca czy dana ramka zawiera w sobie mowę. Określanie jest na podstawie energii.
      * @param n Numer ramki.
      * @return true, jeśli w danej ramce stwierdzono mowę, false w przeciwnym wypadku.
      */
@@ -106,7 +106,7 @@ namespace TALSA
     DataFormat data_format;
     /** Dane.
      */
-    std::int8_t *data;
+    std::uint8_t *data;
     /** Ilość próbek możliwa do zapisania w danym sygnale.
      */
     int size;

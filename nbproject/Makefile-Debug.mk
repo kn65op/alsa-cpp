@@ -37,7 +37,8 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/extras.o \
 	${OBJECTDIR}/src/Recorder.o \
 	${OBJECTDIR}/src/Device.o \
-	${OBJECTDIR}/src/Data.o
+	${OBJECTDIR}/src/Data.o \
+	${OBJECTDIR}/_ext/1514442129/libmfcc.o
 
 
 # C Compiler Flags
@@ -83,6 +84,11 @@ ${OBJECTDIR}/src/Data.o: src/Data.cpp
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
 	$(COMPILE.cc) -g -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/Data.o src/Data.cpp
+
+${OBJECTDIR}/_ext/1514442129/libmfcc.o: ../libmfcc/libmfcc.c 
+	${MKDIR} -p ${OBJECTDIR}/_ext/1514442129
+	${RM} $@.d
+	$(COMPILE.c) -g -fPIC  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1514442129/libmfcc.o ../libmfcc/libmfcc.c
 
 # Subprojects
 .build-subprojects:

@@ -18,7 +18,6 @@ using namespace TALSA;
 Data::Data() : size(0)
 {
   data = 0;
-  sample_frequency = 48000;
 }
 
 Data::~Data()
@@ -68,7 +67,7 @@ void Data::createData()
     {
       delete [] data;
     }
-    data = new std::int8_t [new_mem];
+    data = new std::uint8_t [new_mem];
     mem_size = new_mem;
   }
 }
@@ -98,7 +97,7 @@ void Data::saveRawDataToFile(std::string filename)
   {
     for (int i = 0; i < mem_size; i++)
     {
-      file << (int) data[i] << "\n";
+      file << (int) (data[i] - TALSA::SIGNAL0) << "\n";
     }
   }
   file.close();
@@ -110,18 +109,19 @@ void Data::test()
 {
   std::ofstream file("test.dat", std::ios::out);
   double t = 0.020; //czas trwania okna to 20 ms
-  int n = 0.02 * 48000.0;
-  int nint = 2 / t;
+  int n = 0.02 * 8000.0;
+  int nint = 5 / t;
   for (int j = 0; j < nint; ++j)
   {
     int energy = 0;
     for (int i = 1; i < n; ++i) //dla każdej próbki
     {
-      if (data[i + j * n] * data[i + j * n - 1] < 0)
-      {
-        ++energy;
-      }
-    }
+      energy += pow(data[i + j * n] - TALSA::SIGNAL0, 2);
+      /*      if (data[i + j * n] * data[i + j * n - 1] < 0)
+            {
+              ++energy;
+            }
+       **/    }
     file << energy << "\n";
   }
   file.close();
@@ -132,9 +132,9 @@ void Data::setFrameLength(double length, double overlap)
   window_length_in_s = length;
   window_overlap = overlap;
   window_length = length * sample_frequency;
-  std::cout << window_length << "\n";
+  //  std::cout << window_length << "\n";
   window_start = window_length * (1 - overlap);
-  std::cout << window_start << "\n";
+  //  std::cout << window_start << "\n";
 }
 
 int Data::getSampleFrequency() const
@@ -154,15 +154,22 @@ bool Data::isFrameWithSpeech(int n)
   {
     window_end = mem_size - 1;
   }
-  int zero_crossing = 0;
+  /*  int zero_crossing = 0;
+    for (int i = window_start * n; i < window_end; ++i)
+    {
+      if (data[i + 1] * data[i] < 0)
+      {
+        ++zero_crossing;
+      }
+    }
+   * **/
+  //  if (zero_crossing > TALSA::MAX_NOISE_ZERO_CROSSING)
+  double energy = 0;
   for (int i = window_start * n; i < window_end; ++i)
   {
-    if (data[i + 1] * data[i] < 0)
-    {
-      ++zero_crossing;
-    }
+    energy += pow(data[i] - TALSA::SIGNAL0, 2);
   }
-  if (zero_crossing > TALSA::MAX_NOISE_ZERO_CROSSING)
+  if (energy > TALSA::MIN_ENERGY)
   {
     return true;
   }
@@ -173,6 +180,6 @@ int Data::getWindowsNumber() const
 {
   int i = 1;
   int start = 0;
-  while ((start = window_start * i++)  + window_length < mem_size); //liczenie ilości ramek
-  return i;
+  while ((start = window_start * i++) + window_length < mem_size); //liczenie ilości ramek
+  return --i;
 }

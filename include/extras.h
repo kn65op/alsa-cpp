@@ -168,6 +168,10 @@ namespace TALSA
   /** Liczba przejść przez 0 dla szumu spowodowanego złym mikrofonem.
    */
   extern int MAX_NOISE_ZERO_CROSSING;
+  /** Minimalna energia oznaczająca, że jest mowa*/
+  extern int MIN_ENERGY;
+  /** Wartość zerowa sygnału w systemie bez znaku*/
+  extern int SIGNAL0;
 }
 
 
