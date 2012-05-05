@@ -186,6 +186,7 @@ namespace TALSA
     /** plan
      */
     fftw_plan plan;
+    /** */
     /** liczba ważnych elementów w fft
      */
     int fft_good;

@@ -166,6 +166,7 @@ void Data::setFrameLength(int length, int overlap)
 {
   window_length = length;
   window_start = length - overlap;
+  fft_good = length / 2 + 1;
 }
 
 int Data::getSampleFrequency() const
@@ -241,7 +242,7 @@ std::vector<double> Data::getMFCCFromFrame(int n)
   std::vector<double> tmp(12);
   for (int i = 0; i < 12; ++i)
   {
-    tmp[i] = GetCoefficient(data_after_fft, sample_frequency, 12, 65, i);
+    tmp[i] = GetCoefficient(data_after_fft, sample_frequency, 12, fft_good, i);
   }
   return tmp;
 }
@@ -283,7 +284,7 @@ void Data::initFFT(int length)
   fft = true;
   data_after_fft = new double [length];
   data_before_fft = new double [length];
-  plan = fftw_plan_r2r_1d(128, data_before_fft, data_after_fft, FFTW_R2HC, FFTW_ESTIMATE);
+  plan = fftw_plan_r2r_1d(window_length, data_before_fft, data_after_fft, FFTW_R2HC, FFTW_ESTIMATE);
 }
 
 void Data::calcFFT(int length)
@@ -300,7 +301,7 @@ void Data::calcFFT(int length)
 
 double Data::getFrequencyFromSpectrum(int i) const
 {
-  return i * getSampleFrequency() / 128.0;
+  return i * getSampleFrequency() / window_length;
 }
 
 double Data::spectralMoment0() 
