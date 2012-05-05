@@ -23,6 +23,9 @@ Data::Data() : size(0)
   data_before_fft = 0;
   data_after_fft = 0;
   fft = false;
+  fft_good = 65;
+  spectalMoment0Val = -1;
+  normalizedMoment1Val = -1;
 }
 
 Data::~Data()
@@ -141,8 +144,8 @@ void Data::test()
             {
               ++energy;
             }
-//       **/   // }
-  for (int i =0; i < getWindowsNumber(); ++i)
+//       **/ // }
+  for (int i = 0; i < getWindowsNumber(); ++i)
   {
     file << getFrameEnergy(i) << "\n";
   }
@@ -291,10 +294,58 @@ void Data::calcFFT(int length)
   {
     data_after_fft[i] = sqrt(pow(data_after_fft[i], 2) + pow(data_after_fft[length - i], 2));
   }
-  std::ofstream file("fft.dat", std::ios::out);
-  for (int i =0 ; i < length;  ++i)
+  spectalMoment0Val = -1;
+  normalizedMoment1Val = -1;
+}
+
+double Data::getFrequencyFromSpectrum(int i) const
+{
+  return i * getSampleFrequency() / 128.0;
+}
+
+double Data::spectralMoment0() 
+{
+  if (spectalMoment0Val == -1)
   {
-    file << data_after_fft[i] << " " ;
+    spectalMoment0Val = 0;
+    for (int i = 0; i < fft_good; ++i)
+    {
+      spectalMoment0Val += data_after_fft[i];
+    }
   }
-  file.close();
+  return spectalMoment0Val;
+}
+
+double Data::normalizedMoment1() 
+{
+  if (normalizedMoment1Val == -1)
+  {
+    normalizedMoment1Val = 0;
+    for (int i = 0; i < fft_good; ++i)
+    {
+      normalizedMoment1Val += data_after_fft[i] * getFrequencyFromSpectrum(i);
+    }
+    normalizedMoment1Val /= spectralMoment0();
+  }
+  return normalizedMoment1Val;
+}
+
+double Data::normalizedCentralMoment2() 
+{
+  double tmp = 0;
+  for (int i = 0; i < fft_good; ++i)
+  {
+    tmp += data_after_fft[i] * pow(getFrequencyFromSpectrum(i) - normalizedMoment1(), 2);
+  }
+  return tmp / spectralMoment0();
+}
+
+double Data::normalizedCentralMoment3() 
+{
+  double tmp = 0;
+  for (int i = 0; i < fft_good; ++i)
+  {
+    tmp += data_after_fft[i] * pow(getFrequencyFromSpectrum(i) - normalizedMoment1(), 3);
+  }
+  return tmp / spectralMoment0();
 }

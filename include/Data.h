@@ -118,6 +118,26 @@ namespace TALSA
      * @return Liczba możliwych ramek.
      */
     int getWindowsNumber() const;
+    /**
+     * Funkcja licząca momemt widmowy rzędu 0 .
+     * @return Moment widmowy rzędu 0.
+     */
+    double spectralMoment0();
+    /**
+     * Funkcja licząca moment unormowany rzędu pierwszego.
+     * @return Moment unormowany rzędu 1.
+     */
+    double normalizedMoment1();
+    /**
+     * Funkcja licząca moment unormowany centralny rzędu drugiego.
+     * @return Moment unormowany centralny rzędu 2.
+     */
+    double normalizedCentralMoment2();
+    /**
+     * Funkcja licząca unormowany moment centralny rzędu trzeciego.
+     * @return Moment unormowany centralny rzędu 3.
+     */
+    double normalizedCentralMoment3();
 
     void test();
   private:
@@ -166,6 +186,15 @@ namespace TALSA
     /** plan
      */
     fftw_plan plan;
+    /** liczba ważnych elementów w fft
+     */
+    int fft_good;
+    /** wartość momentu widmowego rzędu 0
+     */
+    double spectalMoment0Val;
+    /** wartość momentu znormalizowanego rzędu 1
+     */
+    double normalizedMoment1Val;
     /**
      * Skalowanie fragmentu dźwięku.
      * @param a początek fragmentu.
@@ -191,6 +220,12 @@ namespace TALSA
      * Funkcja tworząca plan fftw.
      */
     void initFFT(int length);
+    /**
+     * Funkcja zwracająca częstotliwość na osi w widmie.
+     * @param i Numer prążka.
+     * @return Częstotliwość dla danego prążka.
+     */
+    double getFrequencyFromSpectrum(int i) const;
   };
 }
 
