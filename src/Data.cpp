@@ -268,7 +268,10 @@ void Data::scale(int a, int b)
 
 void Data::preemphasis(int length)
 {
-  //TODO dopisać
+  for (int i = 1; i < length; ++i)
+  {
+    data_before_fft[i] = data_before_fft[i-1] * 0.95;
+  }
 }
 
 void Data::HammingWindow(int length)
