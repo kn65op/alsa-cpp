@@ -92,6 +92,12 @@ namespace TALSA
      */
     bool isFrameWithSpeech(int n);
     /**
+     * Funkcja licząca energię danej ramki jako logarytm 
+     * @param n Numer ramki.
+     * @return Energia ramki.
+     */
+    double getFrameEnergy(int n);
+    /**
      * Funkcja zwracająca 12 współczynników MFCC otrzymane z danej ramki.
      * @param n Numer ramki.
      * @return std::vector  12 liczb double, będących współczynnikami.

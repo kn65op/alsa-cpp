@@ -13,6 +13,7 @@
 
 //TODO usunąć
 #include <iostream>
+#include <fstream>
 
 using namespace TALSA;
 
@@ -127,7 +128,7 @@ void Data::saveRawDataToFile(std::string filename)
 void Data::test()
 {
   std::ofstream file("test.dat", std::ios::out);
-  double t = 0.016; //czas trwania okna to 20 ms
+  /*double t = 0.016; //czas trwania okna to 20 ms
   int n = 0.016 * 8000.0;
   int nint = 5 / t;
   for (int j = 0; j < nint; ++j)
@@ -140,8 +141,10 @@ void Data::test()
             {
               ++energy;
             }
-       **/    }
-    file << energy << "\n";
+//       **/   // }
+  for (int i =0; i < getWindowsNumber(); ++i)
+  {
+    file << getFrameEnergy(i) << "\n";
   }
   file.close();
 }
@@ -172,13 +175,23 @@ void Data::setSampleFrequency(int sf)
   sample_frequency = sf;
 }
 
-bool Data::isFrameWithSpeech(int n)
+double Data::getFrameEnergy(int n)
 {
   int window_end = window_start * (n + 1);
   if (window_end > mem_size - 1)
   {
     window_end = mem_size - 1;
   }
+  double energy = 0;
+  for (int i = window_start * n; i < window_end; ++i)
+  {
+    energy += pow(data[i] - TALSA::SIGNAL0, 2);
+  }
+  return log10(energy);
+}
+
+bool Data::isFrameWithSpeech(int n)
+{
   /*  int zero_crossing = 0;
     for (int i = window_start * n; i < window_end; ++i)
     {
@@ -189,12 +202,7 @@ bool Data::isFrameWithSpeech(int n)
     }
    * **/
   //  if (zero_crossing > TALSA::MAX_NOISE_ZERO_CROSSING)
-  double energy = 0;
-  for (int i = window_start * n; i < window_end; ++i)
-  {
-    energy += pow(data[i] - TALSA::SIGNAL0, 2);
-  }
-  if (energy > TALSA::MIN_ENERGY)
+  if (getFrameEnergy(n) > TALSA::MIN_ENERGY)
   {
     return true;
   }
@@ -283,4 +291,10 @@ void Data::calcFFT(int length)
   {
     data_after_fft[i] = sqrt(pow(data_after_fft[i], 2) + pow(data_after_fft[length - i], 2));
   }
+  std::ofstream file("fft.dat", std::ios::out);
+  for (int i =0 ; i < length;  ++i)
+  {
+    file << data_after_fft[i] << " " ;
+  }
+  file.close();
 }
