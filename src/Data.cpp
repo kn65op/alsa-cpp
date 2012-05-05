@@ -9,11 +9,13 @@
 
 #include <fstream>
 #include <cmath>
+#include <algorithm>
 #include "../libmfcc/libmfcc.h"
 
 //TODO usunąć
 #include <iostream>
 #include <fstream>
+#include <bits/stl_iterator_base_funcs.h>
 
 using namespace TALSA;
 
@@ -243,14 +245,14 @@ std::vector<double> Data::getMFCCFromFrame(int n)
   calcFFT(length);
   //liczenie mfcc
   std::vector<double> tmp(12);
-  std::ofstream file("data_after_fft.dat", std::ios::out | std::ios::app);
+  /*/std::ofstream file("data_after_fft.dat", std::ios::out | std::ios::app);
   {
     for (int i = 0; i < length; ++i)
     {
       file << data_after_fft[i] << " ";
     }
     file << "\n";
-  }
+  }*/
   for (int i = 0; i < 12; ++i)
   {
     tmp[i] = GetCoefficient(data_after_fft, sample_frequency, 12, fft_good, i);
@@ -260,7 +262,7 @@ std::vector<double> Data::getMFCCFromFrame(int n)
 
 void Data::copyWindow(int a, int b)
 {
-  for (int i=a; i < b; ++i)
+  for (int i = a; i < b; ++i)
   {
     data_before_fft[i - a] = data[i] - TALSA::SIGNAL0;
   }
@@ -329,7 +331,7 @@ double Data::getFrequencyFromSpectrum(int i) const
   return i * getSampleFrequency() / window_length;
 }
 
-double Data::spectralMoment0() 
+double Data::spectralMoment0()
 {
   if (spectalMoment0Val == -1)
   {
@@ -342,7 +344,7 @@ double Data::spectralMoment0()
   return spectalMoment0Val;
 }
 
-double Data::normalizedMoment1() 
+double Data::normalizedMoment1()
 {
   if (normalizedMoment1Val == -1)
   {
@@ -356,7 +358,7 @@ double Data::normalizedMoment1()
   return normalizedMoment1Val;
 }
 
-double Data::normalizedCentralMoment2() 
+double Data::normalizedCentralMoment2()
 {
   double tmp = 0;
   for (int i = 0; i < fft_good; ++i)
@@ -366,7 +368,7 @@ double Data::normalizedCentralMoment2()
   return tmp / spectralMoment0();
 }
 
-double Data::normalizedCentralMoment3() 
+double Data::normalizedCentralMoment3()
 {
   double tmp = 0;
   for (int i = 0; i < fft_good; ++i)
@@ -374,4 +376,42 @@ double Data::normalizedCentralMoment3()
     tmp += data_after_fft[i] * pow(getFrequencyFromSpectrum(i) - normalizedMoment1(), 3);
   }
   return tmp / spectralMoment0();
+}
+
+std::vector<double> Data::get3Formants()
+{
+  std::vector<double> ret;
+  //przepisanie danych do wektora
+  std::vector<double> data;
+  for (int i = 0; i < fft_good; i++)
+  {
+    data.push_back(data_after_fft[i]);
+  }
+  //pomocnicze zmienne
+  std::vector<double>::iterator it;
+  int n;
+  int iend;
+  int buffor = 5;
+  //skala osi x
+  double fk = sample_frequency / window_length;
+  //test
+  for (int i=0 ; i < 6; ++i)
+  {
+    data[i] = 0;
+  }
+  //test
+  //szukanie trzech maksimów 
+  for (int i = 0; i < 3; i++)
+  {
+    it = std::max_element(data.begin(), data.end());
+    n = std::distance(data.begin(), it);
+    ret.push_back(n * fk);
+    iend = n + buffor > fft_good ? fft_good : n + buffor;
+    for (int j = n - buffor > 0 ? n - buffor : 0; j < iend; ++j)
+    {
+      data[j] = 0;
+    }
+  }
+  std::sort(ret.begin(), ret.end());
+  return ret;
 }

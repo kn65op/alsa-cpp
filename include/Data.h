@@ -138,6 +138,11 @@ namespace TALSA
      * @return Moment unormowany centralny rzędu 3.
      */
     double normalizedCentralMoment3();
+    /**
+     * Funkcja licząca 3 formanty.
+     * @return Wektor z trzema formantami.
+     */
+    std::vector<double> get3Formants();
 
     void test();
   private:
