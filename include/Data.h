@@ -196,6 +196,9 @@ namespace TALSA
     /** wartość momentu znormalizowanego rzędu 1
      */
     double normalizedMoment1Val;
+    /** Minimalna wielkość energii oznaczająca, że jest mowa
+     */
+    double min_energy;
     /**
      * Skalowanie fragmentu dźwięku.
      * @param a początek fragmentu.

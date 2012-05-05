@@ -167,6 +167,7 @@ void Data::setFrameLength(int length, int overlap)
   window_length = length;
   window_start = length - overlap;
   fft_good = length / 2 + 1;
+  min_energy = log10(length * 9);
 }
 
 int Data::getSampleFrequency() const
@@ -206,7 +207,7 @@ bool Data::isFrameWithSpeech(int n)
     }
    * **/
   //  if (zero_crossing > TALSA::MAX_NOISE_ZERO_CROSSING)
-  if (getFrameEnergy(n) > TALSA::MIN_ENERGY)
+  if (getFrameEnergy(n) > min_energy)
   {
     return true;
   }

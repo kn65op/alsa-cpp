@@ -3,7 +3,7 @@
 namespace TALSA
 {
   int MAX_NOISE_ZERO_CROSSING = 2;
-  int MIN_ENERGY = 2;
+  int MIN_ENERGY = 3;
   int SIGNAL0 = 128;
 }
 //snd_pcm_format_t DataFormatHelper::getFormat(DataFormat df)
