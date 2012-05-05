@@ -167,7 +167,7 @@ void Data::setFrameLength(int length, int overlap)
   window_length = length;
   window_start = length - overlap;
   fft_good = length / 2 + 1;
-  min_energy = log10(length * 9);
+  min_energy = log10(length * 4);
 }
 
 int Data::getSampleFrequency() const
@@ -231,16 +231,26 @@ std::vector<double> Data::getMFCCFromFrame(int n)
   {
     initFFT(length);
   }
-  //skalowanie
-  scale(start_fragment, end_fragment);
+  //kopiowanie okna
+  copyWindow(start_fragment, end_fragment);
   //preemfaza
   preemphasis(length);
+  //skalowanie
+  scale(length);
   //okienkowanie
   HammingWindow(length);
   //fft
   calcFFT(length);
   //liczenie mfcc
   std::vector<double> tmp(12);
+  std::ofstream file("data_after_fft.dat", std::ios::out | std::ios::app);
+  {
+    for (int i = 0; i < length; ++i)
+    {
+      file << data_after_fft[i] << " ";
+    }
+    file << "\n";
+  }
   for (int i = 0; i < 12; ++i)
   {
     tmp[i] = GetCoefficient(data_after_fft, sample_frequency, 12, fft_good, i);
@@ -248,20 +258,26 @@ std::vector<double> Data::getMFCCFromFrame(int n)
   return tmp;
 }
 
-void Data::scale(int a, int b)
+void Data::copyWindow(int a, int b)
+{
+  for (int i=a; i < b; ++i)
+  {
+    data_before_fft[i - a] = data[i] - TALSA::SIGNAL0;
+  }
+}
+
+void Data::scale(int length)
 {
   double max = 0;
   double tmp;
-  int size = b - a;
-  for (int i = a; i < b; ++i)
+  for (int i = 0; i < length; ++i) //szukanie maksimum
   {
-    data_before_fft[i - a] = data[i] - TALSA::SIGNAL0;
-    if ((tmp = fabs(data_before_fft[i - a])) > max)
+    if ((tmp = fabs(data_before_fft[i])) > max)
     {
       max = tmp;
     }
   }
-  for (int i = 0; i < size; ++i)
+  for (int i = 0; i < length; ++i) //skalowanie
   {
     data_before_fft[i] = 100 * data_before_fft[i] / max;
   }
@@ -269,9 +285,13 @@ void Data::scale(int a, int b)
 
 void Data::preemphasis(int length)
 {
+  double tmp = data_before_fft[0];
+  double tmp2 = data_before_fft[0];
   for (int i = 1; i < length; ++i)
   {
-    data_before_fft[i] = data_before_fft[i-1] * 0.95;
+    tmp2 = data_before_fft[i];
+    data_before_fft[i] = data_before_fft[i] - tmp * 0.95;
+    tmp = tmp2;
   }
 }
 
@@ -294,7 +314,8 @@ void Data::initFFT(int length)
 void Data::calcFFT(int length)
 {
   fftw_execute(plan);
-  //liczenie mfcc
+  //liczenie amplitudy
+  data_after_fft[0] = fabs(data_after_fft[0]);
   for (int i = 1; i < length / 2; ++i) //zamiana na moduł
   {
     data_after_fft[i] = sqrt(pow(data_after_fft[i], 2) + pow(data_after_fft[length - i], 2));

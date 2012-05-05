@@ -200,11 +200,17 @@ namespace TALSA
      */
     double min_energy;
     /**
+     * Funkcja kopiująca okno do innej tablicy.
+     * @param a Początek okna.
+     * @param b Koniec okna.
+     */
+    void copyWindow(int a, int b);
+    /**
      * Skalowanie fragmentu dźwięku.
      * @param a początek fragmentu.
      * @param b koniec fragmentu.
      */
-    void scale(int a, int b);
+    void scale(int length);
     /**
      * Preemfaza fragmentu dźwięku, znajdującego się w zmiennej data_feature.
      * @param length Długość fragmentu.
