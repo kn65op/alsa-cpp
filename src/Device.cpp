@@ -13,6 +13,7 @@ Device::Device()
 {
   clear();
   data_format = DataFormat::U8;
+  frequency = 44100;
 }
 
 Device::~Device()
@@ -58,7 +59,7 @@ void Device::open(AccessMode am) throw (WrongArgument, InvalidOperation)
                                 DataFormatHelper::getFormat(data_format),
                                 SND_PCM_ACCESS_RW_INTERLEAVED,
                                 1,
-                                8000, //częstotliwość próbkowania
+                                frequency, //częstotliwość próbkowania
                                 1,
                                 500000)) < 0)
   {

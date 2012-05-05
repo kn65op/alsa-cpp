@@ -70,14 +70,27 @@ namespace TALSA
      * @return TALSA::DataFormat zgodny z formatem używanym przez urządzenie.
      */
     DataFormat getDataFormat() const;
+
+    /**
+     * Ustawienie częstotliwości próbkowania.
+     * @param frequency Częstotliwość próbkowania w Hz.
+     */
+    void setFrequency(int frequency)
+    {
+      this->frequency = frequency;
+    }
   private:
     snd_pcm_t *handle; //uchwyt
     std::string device; //urządzenie
     AccessMode access_mode; //służy do kontroli kierunku przepływu informacji
     DataFormat data_format;
 
+    /** Częstotliwość próbkowania
+     */
+    int frequency;
 
-    
+
+
     /**
      * Funkcja pomocnicza, do sprawdzania warunków poprawności danych.
      * @param d Dane do sprawdzenia.
@@ -90,5 +103,6 @@ namespace TALSA
     void clear();
   };
 }
+
 
 #endif	/* DEVICE_H */
