@@ -28,6 +28,7 @@ Data::Data() : size(0)
   fft_good = 65;
   spectalMoment0Val = -1;
   normalizedMoment1Val = -1;
+  prepared = -1;
 }
 
 Data::~Data()
@@ -224,8 +225,13 @@ int Data::getWindowsNumber() const
   return i;
 }
 
-std::vector<double> Data::getMFCCFromFrame(int n)
+void Data::prepareWindow(int n)
 {
+  if (prepared == n) //jeśli to okno już przygotowano
+  {
+    return;
+  }
+  prepared = n;
   int start_fragment = n * window_start;
   int end_fragment = start_fragment + window_length;
   int length = end_fragment - start_fragment;
@@ -243,6 +249,11 @@ std::vector<double> Data::getMFCCFromFrame(int n)
   HammingWindow(length);
   //fft
   calcFFT(length);
+}
+
+std::vector<double> Data::getMFCCFromFrame(int n)
+{
+  prepareWindow(n);
   //liczenie mfcc
   std::vector<double> tmp(12);
   /*/std::ofstream file("data_after_fft.dat", std::ios::out | std::ios::app);
@@ -378,8 +389,9 @@ double Data::normalizedCentralMoment3()
   return tmp / spectralMoment0();
 }
 
-std::vector<double> Data::get3Formants()
+std::vector<double> Data::get3Formants(int frame)
 {
+  prepareWindow(frame);
   std::vector<double> ret;
   //przepisanie danych do wektora
   std::vector<double> data;
@@ -395,7 +407,7 @@ std::vector<double> Data::get3Formants()
   //skala osi x
   double fk = sample_frequency / window_length;
   //test
-  for (int i=0 ; i < 6; ++i)
+  for (int i = 0; i < 6; ++i)
   {
     data[i] = 0;
   }
@@ -405,7 +417,7 @@ std::vector<double> Data::get3Formants()
   {
     it = std::max_element(data.begin(), data.end());
     n = std::distance(data.begin(), it);
-    ret.push_back(n * fk);
+    ret.push_back(n * fk / 8000);
     iend = n + buffor > fft_good ? fft_good : n + buffor;
     for (int j = n - buffor > 0 ? n - buffor : 0; j < iend; ++j)
     {

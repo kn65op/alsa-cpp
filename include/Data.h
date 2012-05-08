@@ -140,9 +140,15 @@ namespace TALSA
     double normalizedCentralMoment3();
     /**
      * Funkcja licząca 3 formanty.
+     * @param frame Numer okna.
      * @return Wektor z trzema formantami.
      */
-    std::vector<double> get3Formants();
+    std::vector<double> get3Formants(int frame);
+    /**
+     * Funkcja przygotowująca ramkę do analizy.
+     * @param n Numer ramki.
+     */
+    void prepareWindow(int n);
 
     void test();
   private:
@@ -195,6 +201,9 @@ namespace TALSA
     /** liczba ważnych elementów w fft
      */
     int fft_good;
+    /** numer ostatnio przygotowanego okna
+     */
+    int prepared;
     /** wartość momentu widmowego rzędu 0
      */
     double spectalMoment0Val;
