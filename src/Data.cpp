@@ -439,8 +439,8 @@ void Data::findPhonemeBorders()
   while (first < max && !isFrameWithSpeech(first++)); //pierwsza ramka
   last = max;
   while (last > 0 && !isFrameWithSpeech(last--));
-  first -= (first > 110 ? 110 : first);
-  last += (max - last > 110 ? 110 : max - last);
+  first -= (first > 10 ? 10 : first);
+  last += (max - last > 10 ? 10 : max - last);
   std::cout << first * window_start << " " << last * window_start << "\n";
   int first_sample = first * window_start;
   //progi
