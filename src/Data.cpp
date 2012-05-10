@@ -171,7 +171,7 @@ void Data::setFrameLength(int length, int overlap)
   window_length = length;
   window_start = length - overlap;
   fft_good = length / 2 + 1;
-  min_energy = log10(length * 3);
+  min_energy = log10(length * 3.1);
 }
 
 int Data::getSampleFrequency() const
@@ -470,6 +470,13 @@ void Data::findPhonemeBorders()
   scale /= max_it;
   for (int i = 1; i < max_it; ++i) thresholds.push_back(i * scale + bias);
 
+  std::ofstream thresfile("thres.dat", std::ios::out);
+  for (auto t : thresholds)
+  {
+    thresfile << t << "\n";
+  }
+  thresfile.close();
+
   //liczenie LCR
   std::vector<int> lcr((last - first) * window_start + window_length);
   int i = first * window_start;
@@ -477,13 +484,23 @@ void Data::findPhonemeBorders()
   {
     for (auto t : thresholds)
     {
-      if ((fabs(data[i]) - t) * (fabs(data[i - 1]) - t) < 0)
+      if ((fabs(data[i] - TALSA::SIGNAL0) - t) * (fabs(data[i - 1] - TALSA::SIGNAL0) - t) < 0)
       {
         ++l;
       }
     }
     ++i;
   }
+  std::ofstream fileclr("LCR.dat", std::ios::out);
+  for (int i = first_sample; i > 0; --i)
+  {
+    fileclr << "0 ";
+  }
+  for (auto l : lcr)
+  {
+    fileclr << l << " ";
+  }
+  fileclr.close();
 
   //liczenie ALCR
   std::vector<double> alcr(lcr.size() - 200);
@@ -499,6 +516,10 @@ void Data::findPhonemeBorders()
                   a += x;
     });
     a /= 200;
+    if (a < 0.1)
+    {
+      a = 0;
+    }
   }
 
   std::ofstream file("ALCR.dat", std::ios::out);
@@ -532,35 +553,52 @@ void Data::findPhonemeBorders()
     }
     else //inna lcizba
     {
-      if (alcr[i] <= alcr[i - 1]) // mniejsze od poprzedniego, zwiększamy licznik
+      if (alcr[i] <= alcr[i - 1] && alcr[i] <= alcr[i + 1]) //minimum lokalne
       {
-        //szukamy minimum
-        if (++mins_back == half_of_local_min_in_samples) // mamy minimum wstecz, sprawdzamy wprzód, szukanie najbliższego minimum lokalnego, które ma otoczenie 
+        bool ok = true;
+        for (int k = 2; k < half_of_local_min_in_samples; ++k)
         {
-          mins_back = 0;
-          bool ok = false;
-          while (!ok)
+          if (alcr[i] > alcr[i - k] || alcr[i] > alcr[i + k])//nie jest to minimum w otoczeniu 
           {
-            ok = true;
-            int local_max_it = half_of_local_min_in_samples + i;
-            for (int k = i + 1; k < local_max_it; ++k) //iteracja w przód
-            {
-              if (alcr[i] > alcr[k]) //znaleziono mniejszą liczbę
-              {
-                i = k;
-                ok = false;
-                break; //zatrzymanie pętli
-              }
-            }
+            ok = false;
+            break;
           }
+        }
+        if (ok) // jest dobre minimum
+        {
           segments.push_back(i);
           i += min_segment_duraion_in_samples - half_of_local_min_in_samples;
         }
       }
-      else //większe od poprzedniego, zerowanie licznika
-      {
-        mins_back = 0;
-      }
+      /*   if (alcr[i] <= alcr[i - 1]) // mniejsze od poprzedniego, zwiększamy licznik
+         {
+           //szukamy minimum
+           if (++mins_back == half_of_local_min_in_samples) // mamy minimum wstecz, sprawdzamy wprzód, szukanie najbliższego minimum lokalnego, które ma otoczenie 
+           {
+             mins_back = 0;
+             bool ok = false;
+             while (!ok)
+             {
+               ok = true;
+               int local_max_it = half_of_local_min_in_samples + i;
+               for (int k = i + 1; k < local_max_it; ++k) //iteracja w przód
+               {
+                 if (alcr[i] > alcr[k]) //znaleziono mniejszą liczbę
+                 {
+                   i = k;
+                   ok = false;
+                   break; //zatrzymanie pętli
+                 }
+               }
+             }
+             segments.push_back(i);
+             i += min_segment_duraion_in_samples - half_of_local_min_in_samples;
+           }
+         }
+         else //większe od poprzedniego, zerowanie licznika
+         {
+           mins_back = 0;
+         }**/
     }
   }
   std::ofstream segfile("segments.dat", std::ios::out);
