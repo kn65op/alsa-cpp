@@ -149,6 +149,11 @@ namespace TALSA
      * @param n Numer ramki.
      */
     void prepareWindow(int n);
+    /**
+     * Funkcja wyszukująca granice między fonemami.
+     */
+    void findPhonemeBorders();
+    
 
     void test();
   private:

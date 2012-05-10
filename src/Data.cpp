@@ -16,6 +16,7 @@
 #include <iostream>
 #include <fstream>
 #include <bits/stl_iterator_base_funcs.h>
+#include <stdexcept>
 
 using namespace TALSA;
 
@@ -170,7 +171,7 @@ void Data::setFrameLength(int length, int overlap)
   window_length = length;
   window_start = length - overlap;
   fft_good = length / 2 + 1;
-  min_energy = log10(length * 4);
+  min_energy = log10(length * 3);
 }
 
 int Data::getSampleFrequency() const
@@ -426,4 +427,146 @@ std::vector<double> Data::get3Formants(int frame)
   }
   std::sort(ret.begin(), ret.end());
   return ret;
+}
+
+void Data::findPhonemeBorders()
+{
+  int signal_max = 127;
+  //szukanie pierwszej i ostatniej ramki z mową
+  int first, last;
+  int max = getWindowsNumber();
+  first = 0;
+  while (first < max && !isFrameWithSpeech(first++)); //pierwsza ramka
+  last = max;
+  while (last > 0 && !isFrameWithSpeech(last--));
+  first -= (first > 110 ? 110 : first);
+  last += (max - last > 110 ? 110 : max - last);
+  std::cout << first * window_start << " " << last * window_start << "\n";
+  int first_sample = first * window_start;
+  //progi
+  std::vector<double> thresholds;
+  int max_it = 6;
+  double scale = 0.01 * signal_max;
+  scale /= max_it;
+  for (int i = 1; i < max_it; ++i) thresholds.push_back(i * scale);
+  scale = 0.1 * signal_max - 0.01 * signal_max;
+  double bias = 0.01 * signal_max;
+  max_it = 25;
+  scale /= max_it;
+  for (int i = 1; i < max_it; ++i) thresholds.push_back(i * scale + bias);
+  scale = 0.9 * signal_max - 0.1 * signal_max;
+  bias = 0.1 * signal_max;
+  max_it = 15;
+  scale /= max_it;
+  for (int i = 1; i < max_it; ++i) thresholds.push_back(i * scale + bias);
+  scale = 0.99 * signal_max - 0.9 * signal_max;
+  bias = 0.9 * signal_max;
+  max_it = 25;
+  scale /= max_it;
+  for (int i = 1; i < max_it; ++i) thresholds.push_back(i * scale + bias);
+  scale = signal_max * 0.01;
+  bias = 0.99 * signal_max;
+  max_it = 6;
+  scale /= max_it;
+  for (int i = 1; i < max_it; ++i) thresholds.push_back(i * scale + bias);
+
+  //liczenie LCR
+  std::vector<int> lcr((last - first) * window_start + window_length);
+  int i = first * window_start;
+  for (int & l : lcr)
+  {
+    for (auto t : thresholds)
+    {
+      if ((fabs(data[i]) - t) * (fabs(data[i - 1]) - t) < 0)
+      {
+        ++l;
+      }
+    }
+    ++i;
+  }
+
+  //liczenie ALCR
+  std::vector<double> alcr(lcr.size() - 200);
+  std::vector<int>::iterator begin, end;
+  begin = lcr.begin();
+  end = lcr.begin() + 200;
+  int sum;
+  for (double & a : alcr)
+  {
+
+    std::for_each(begin++, end++, [&a](int x)
+    {
+                  a += x;
+    });
+    a /= 200;
+  }
+
+  std::ofstream file("ALCR.dat", std::ios::out);
+
+  for (int i = first_sample + 100; i > 0; --i)
+  {
+    file << "0 ";
+  }
+  for (auto a : alcr)
+  {
+    file << a << " ";
+  }
+
+  std::vector<int> segments;
+  double half_of_local_min = 0.01;
+  int half_of_local_min_in_samples = sample_frequency * half_of_local_min;
+  double min_segment_duration = 0.012;
+  int min_segment_duraion_in_samples = sample_frequency * min_segment_duration;
+  int mins_back;
+  //liczenie granic pomiędzy fonemamia
+  int size = alcr.size() - half_of_local_min_in_samples;
+  for (int i = half_of_local_min_in_samples; i < size; ++i)
+  {
+    //przypadek, gdy mamy 0
+    if (!alcr[i])
+    {
+      segments.push_back(i);
+      while (++i < size && !alcr.at(i));
+      segments.push_back(i);
+      mins_back = 0;
+    }
+    else //inna lcizba
+    {
+      if (alcr[i] <= alcr[i - 1]) // mniejsze od poprzedniego, zwiększamy licznik
+      {
+        //szukamy minimum
+        if (++mins_back == half_of_local_min_in_samples) // mamy minimum wstecz, sprawdzamy wprzód, szukanie najbliższego minimum lokalnego, które ma otoczenie 
+        {
+          mins_back = 0;
+          bool ok = false;
+          while (!ok)
+          {
+            ok = true;
+            int local_max_it = half_of_local_min_in_samples + i;
+            for (int k = i + 1; k < local_max_it; ++k) //iteracja w przód
+            {
+              if (alcr[i] > alcr[k]) //znaleziono mniejszą liczbę
+              {
+                i = k;
+                ok = false;
+                break; //zatrzymanie pętli
+              }
+            }
+          }
+          segments.push_back(i);
+          i += min_segment_duraion_in_samples - half_of_local_min_in_samples;
+        }
+      }
+      else //większe od poprzedniego, zerowanie licznika
+      {
+        mins_back = 0;
+      }
+    }
+  }
+  std::ofstream segfile("segments.dat", std::ios::out);
+  for (auto a : segments)
+  {
+    segfile << (a + 100 + half_of_local_min + first_sample) << "\n";
+  }
+  segfile.close();
 }
