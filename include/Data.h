@@ -92,6 +92,13 @@ namespace TALSA
      */
     bool isFrameWithSpeech(int n);
     /**
+     * Funkcja określająca czy dany zakres zawiera w sobie mowę. Określanie na podstawie energii.
+     * @param start Początek zakresu.
+     * @param end Koniec zakresu.
+     * @return true jeśli w danym zakresie wykryto mowę, false w przeciwnym wypadku.
+     */
+    bool isSpeechInside(int start, int end);
+    /**
      * Funkcja licząca energię danej ramki jako logarytm 
      * @param n Numer ramki.
      * @return Energia ramki.

@@ -171,7 +171,7 @@ void Data::setFrameLength(int length, int overlap)
   window_length = length;
   window_start = length - overlap;
   fft_good = length / 2 + 1;
-  min_energy = log10(length * 3.1);
+  min_energy = log10(length * 3.2);
 }
 
 int Data::getSampleFrequency() const
@@ -197,6 +197,17 @@ double Data::getFrameEnergy(int n)
     energy += pow(data[i] - TALSA::SIGNAL0, 2);
   }
   return log10(energy);
+}
+
+bool Data::isSpeechInside(int start, int end)
+{
+  double energy = 0;
+  for (int i=start; i!= end; ++i)
+  {
+    energy += pow(data[i] - TALSA::SIGNAL0, 2);
+  }
+  std::cout << energy << "\n";
+  return energy >  (end - start) * 4;
 }
 
 bool Data::isFrameWithSpeech(int n)
@@ -601,10 +612,71 @@ void Data::findPhonemeBorders()
          }**/
     }
   }
+
+  //przejście na numery próbek
+  for (auto & a : segments)
+  {
+    a += 100 + half_of_local_min + first_sample;
+  }
+
   std::ofstream segfile("segments.dat", std::ios::out);
   for (auto a : segments)
   {
-    segfile << (a + 100 + half_of_local_min + first_sample) << "\n";
+    segfile << a << "\n";
   }
   segfile.close();
+
+  std::cout << "analiza segmentów\n";
+  //analiza segmentów
+  //inicjalizacja fft
+  double data_after_fft[1024];
+  double data_before_fft[512];
+  double autocor[1024];
+  fftw_plan plan = fftw_plan_r2r_1d(1024, autocor, data_after_fft, FFTW_R2HC, FFTW_ESTIMATE);
+  // /analzia 
+  std::ofstream wektor("wektor.dat", std::ios::out);
+  int seg_size = segments.size();
+  for (int i = 1; i < seg_size; ++i)
+  {
+    if (!isSpeechInside(segments[i-1], segments[i]))
+    {
+      std::cout << "Cont\n";
+      continue;
+    }
+    //przepisanie wartości
+    int j;
+    int it_data_fft = 0;
+    for (j = segments[i - 1]; j < segments[i] && it_data_fft < 512; ++j)
+    {
+      data_before_fft[it_data_fft++] = (data[j] - TALSA::SIGNAL0);
+    }
+    for (; it_data_fft < 512; ++it_data_fft)
+    {
+      data_before_fft[it_data_fft] = 0;
+    }
+    //autokorelacja
+    for (int i = 0; i < 512; ++i)
+    {
+      autocor[i] = 0;
+      for (int j = 511 - i; j < 512; ++j)
+      {
+        for (int k = 0; k < 512 - i; ++k)
+        {
+          autocor[1023 - i] = autocor[i] += data_before_fft[j] * data_before_fft[k];
+        }
+      }
+    }
+    fftw_execute(plan);
+    //liczenie amplitudy
+    data_after_fft[0] = fabs(data_after_fft[0]);
+    for (int i = 1; i < 512; ++i) //zamiana na moduł
+    {
+      data_after_fft[i] = sqrt(pow(data_after_fft[i], 2) + pow(data_after_fft[512 - i], 2));
+    }
+    for (int i=0; i < 513; ++i)
+    {
+      wektor << data_after_fft[i] << " ";
+    }
+    wektor << "\n";
+  }
 }
