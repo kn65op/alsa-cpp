@@ -202,12 +202,12 @@ double Data::getFrameEnergy(int n)
 bool Data::isSpeechInside(int start, int end)
 {
   double energy = 0;
-  for (int i=start; i!= end; ++i)
+  for (int i = start; i != end; ++i)
   {
     energy += pow(data[i] - TALSA::SIGNAL0, 2);
   }
   std::cout << energy << "\n";
-  return energy >  (end - start) * 4;
+  return energy > (end - start) * 4;
 }
 
 bool Data::isFrameWithSpeech(int n)
@@ -488,6 +488,11 @@ void Data::findPhonemeBorders()
   }
   thresfile.close();
 
+  //sprawdzenie czy jest mowa
+  if (first >= last)
+  {
+    return;
+  }
   //liczenie LCR
   std::vector<int> lcr((last - first) * window_start + window_length);
   int i = first * window_start;
@@ -634,15 +639,18 @@ void Data::findPhonemeBorders()
   double autocor[1024];
   fftw_plan plan = fftw_plan_r2r_1d(1024, autocor, data_after_fft, FFTW_R2HC, FFTW_ESTIMATE);
   // /analzia 
-  std::ofstream wektor("wektor.dat", std::ios::out);
+  std::ofstream wektor("wektorSTART.dat", std::ios::out);
+  std::ofstream wektor_desc("wektor_desc.dat", std::ios::out);
   int seg_size = segments.size();
+  int thres_out = 100000;
   for (int i = 1; i < seg_size; ++i)
   {
-    if (!isSpeechInside(segments[i-1], segments[i]))
+    if (!isSpeechInside(segments[i - 1], segments[i]))
     {
       std::cout << "Cont\n";
       continue;
     }
+    wektor_desc << segments[i-1] << " " << segments[i] << "\n";
     //przepisanie wartości
     int j;
     int it_data_fft = 0;
@@ -673,10 +681,12 @@ void Data::findPhonemeBorders()
     {
       data_after_fft[i] = sqrt(pow(data_after_fft[i], 2) + pow(data_after_fft[512 - i], 2));
     }
-    for (int i=0; i < 513; ++i)
+    for (int i = 0; i < 513; ++i) //zapis do pliku
     {
-      wektor << data_after_fft[i] << " ";
+      wektor << (data_after_fft[i] > thres_out) << " "; //zamiana na wektor binarny
     }
     wektor << "\n";
   }
+  wektor.close();
+  wektor_desc.close();
 }
