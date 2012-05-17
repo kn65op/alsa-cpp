@@ -645,7 +645,7 @@ void Data::findPhonemeBorders()
   std::ofstream autokor("autokor.dat", std::ios::out);
   std::ofstream after("after.dat", std::ios::out);
   int seg_size = segments.size();
-  int thres_out = 100000;
+  int thres_out = 10000;
   for (int i = 1; i < seg_size; ++i)
   {
     if (!isSpeechInside(segments[i - 1], segments[i]))
@@ -692,7 +692,7 @@ void Data::findPhonemeBorders()
     data_after_fft[0] = fabs(data_after_fft[0]);
     for (int i = 1; i < 512; ++i) //zamiana na moduł
     {
-      data_after_fft[i] = sqrt(pow(data_after_fft[i], 2) + pow(data_after_fft[512 - i], 2));
+      data_after_fft[i] = sqrt(pow(data_after_fft[i], 2) + pow(data_after_fft[1024 - i], 2));
     }
     //TODO wypisanie po fft
     for (int i = 0; i < 513; ++i)
