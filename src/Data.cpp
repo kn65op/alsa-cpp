@@ -639,8 +639,11 @@ void Data::findPhonemeBorders()
   double autocor[1024];
   fftw_plan plan = fftw_plan_r2r_1d(1024, autocor, data_after_fft, FFTW_R2HC, FFTW_ESTIMATE);
   // /analzia 
-  std::ofstream wektor("wektorSTART.dat", std::ios::out);
+  std::ofstream wektor("wektor.dat", std::ios::out);
   std::ofstream wektor_desc("wektor_desc.dat", std::ios::out);
+  std::ofstream before("before.dat", std::ios::out);
+  std::ofstream autokor("autokor.dat", std::ios::out);
+  std::ofstream after("after.dat", std::ios::out);
   int seg_size = segments.size();
   int thres_out = 100000;
   for (int i = 1; i < seg_size; ++i)
@@ -650,7 +653,7 @@ void Data::findPhonemeBorders()
       std::cout << "Cont\n";
       continue;
     }
-    wektor_desc << segments[i-1] << " " << segments[i] << "\n";
+    wektor_desc << segments[i - 1] << " " << segments[i] << "\n";
     //przepisanie wartości
     int j;
     int it_data_fft = 0;
@@ -662,18 +665,28 @@ void Data::findPhonemeBorders()
     {
       data_before_fft[it_data_fft] = 0;
     }
+    //TODO wypisanie wejścia
+    for (int i = 0; i < 512; i++)
+    {
+      before << data_before_fft[i] << " ";
+    }
+    before << "\n";
     //autokorelacja
     for (int i = 0; i < 512; ++i)
     {
       autocor[i] = 0;
-      for (int j = 511 - i; j < 512; ++j)
+      autocor[1023 - i] = 0;
+      for (int j = 0; j < i + 1; ++j)
       {
-        for (int k = 0; k < 512 - i; ++k)
-        {
-          autocor[1023 - i] = autocor[i] += data_before_fft[j] * data_before_fft[k];
-        }
+        autocor[1023 - i] = autocor[i] += data_before_fft[j] * data_before_fft[511 - i + j];
       }
     }
+    //TODO wypisanie korelacji
+    for (int i = 0; i < 1024; ++i)
+    {
+      autokor << autocor[i] << " ";
+    }
+    autokor << "\n";
     fftw_execute(plan);
     //liczenie amplitudy
     data_after_fft[0] = fabs(data_after_fft[0]);
@@ -681,6 +694,12 @@ void Data::findPhonemeBorders()
     {
       data_after_fft[i] = sqrt(pow(data_after_fft[i], 2) + pow(data_after_fft[512 - i], 2));
     }
+    //TODO wypisanie po fft
+    for (int i = 0; i < 513; ++i)
+    {
+      after << data_after_fft[i] << " ";
+    }
+    after << "\n";
     for (int i = 0; i < 513; ++i) //zapis do pliku
     {
       wektor << (data_after_fft[i] > thres_out) << " "; //zamiana na wektor binarny
