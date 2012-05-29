@@ -579,12 +579,8 @@ void Data::findPhonemeBorders()
   //testowa analiza
   double zero_cross;
   // /analzia 
-  std::ofstream wektor("wektor.dat", std::ios::out);
   std::ofstream fourier("fourier.dat", std::ios::out);
   std::ofstream wektor_desc("wektor_desc.dat", std::ios::out);
-  std::ofstream before("before.dat", std::ios::out);
-  std::ofstream autokor("autokor.dat", std::ios::out);
-  std::ofstream after("after.dat", std::ios::out);
   std::ofstream parameters("parameters_cut.dat", std::ios::out);
   std::ofstream before_thresholding("before_thres.dat", std::ios::out);
   int seg_size = segments.size();
@@ -664,12 +660,7 @@ void Data::findPhonemeBorders()
     {
       data_before_fft[it_data_fft] = 0;
     }
-    //TODO wypisanie wejścia
-    for (int i = 0; i < 512; i++)
-    {
-      before << data_before_fft[i] << " ";
-    }
-    before << "\n";
+
     //autokorelacja
     for (int i = 0; i < 512; ++i)
     {
@@ -680,12 +671,7 @@ void Data::findPhonemeBorders()
         autocor[1023 - i] = autocor[i] += data_before_fft[j] * data_before_fft[511 - i + j];
       }
     }
-    //TODO wypisanie korelacji
-    for (int i = 0; i < 1024; ++i)
-    {
-      autokor << autocor[i] << " ";
-    }
-    autokor << "\n";
+
     //preemfaza
     for (int i = 1; i < 512; ++i)
     {
@@ -700,8 +686,6 @@ void Data::findPhonemeBorders()
     {
       if ((data_after_fft[i] = sqrt(pow(data_after_fft[i], 2) + pow(data_after_fft[1024 - i], 2))) > max_after_fft)
       {
-        //	parameters << ((data_after_fft[i] = sqrt(pow(data_after_fft[i], 2) + pow(data_after_fft[1024 - i], 2))) > max_after_fft ) << "\n";
-        //	parameters << data_after_fft[i] << "?" << max_after_fft << "\n";
         max_after_fft = data_after_fft[i];
       }
     }
@@ -754,18 +738,11 @@ void Data::findPhonemeBorders()
     parameters << central_moment2 / 10e6 << " ";
     parameters << central_moment3 / 10e10 << " ";
     parameters << powerl / powerh << " ";
-    //TODO wypisanie po fft
-    for (int i = 0; i < 513; ++i)
-    {
-      after << data_after_fft[i] << " ";
-    }
-    after << "\n";
-    wektor << zero_cross << " ";
+
     //zmiana skali
     double thres_after_signal = max_after_signal * 0.2;
     for (int i = 0; i < 257; ++i)
     {
-      wektor << (data_after_fft_signal[i] > thres_after_signal) << " ";
       fourier << data_after_fft_signal[i] / max_after_signal << " ";
     }
     //progowanie adaptacyjne (do fragmentu)
@@ -774,22 +751,16 @@ void Data::findPhonemeBorders()
     //    parameters << thres_out << "\n";
     for (int i = 0; i < 513; ++i) //zapis do pliku
     {
-      wektor << (data_after_fft[i] > thres_out) << " "; //zamiana na wektor binarny
       if (data_after_fft[i])
       {
         before_thresholding << log10(data_after_fft[i] / max_after_fft) << " ";
       }
     }
 
-    wektor << "\n";
     fourier << "\n";
     before_thresholding << "\n";
     parameters << "\n";
   }
-  after.close();
-  before.close();
-  autokor.close();
-  wektor.close();
   fourier.close();
   wektor_desc.close();
   before_thresholding.close();
