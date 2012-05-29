@@ -279,6 +279,10 @@ namespace TALSA
      * Funkcja szukająca granic mowy.
      */
     void findSpeechBorders();
+    /**
+     * Funkcja analizująca wykryte segmenty.
+     */
+    void analyzeSegments();
     /** Progi do wyznaczania ALCR
      */
     static std::vector<double> ALCRthresholds;
@@ -290,6 +294,9 @@ namespace TALSA
     /** wektor granic pomiędzy segmentami mowy
      */
     std::vector<int>segments;
+    /** parametry wyznaczone z segmentow
+     */
+    std::vector<std::vector<double>> parameter;
   };
 }
 

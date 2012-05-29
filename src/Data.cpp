@@ -567,8 +567,10 @@ void Data::findPhonemeBorders()
   {
     a += 100 + half_of_local_min + first_sample;
   }
+}
 
-  //analiza segmentów
+void Data::analyzeSegments()
+{
   //inicjalizacja fft
   double data_after_fft[1024];
   double data_after_fft_signal[512];
@@ -608,6 +610,8 @@ void Data::findPhonemeBorders()
     double avg = 0;
     double energy = 0;
     double stdev = 0;
+    std::vector<double>::iterator it = parameter.end()->begin();
+    parameter.push_back(std::vector<double>(7));
     for (j = segments[i - 1]; j < segments[i] && it_data_fft < 512; ++it_data_fft, ++j) //przepisanie segmentu 
     {
       avg += data_before_fft[it_data_fft] = (data[j] - TALSA::SIGNAL0); // - (data[j-1] - TALSA::SIGNAL0) * 0.95; //preemfaza
@@ -651,11 +655,14 @@ void Data::findPhonemeBorders()
     parameters << "Zakres: " << segments[i - 1] << " " << segments[i] << "\n";
     parameters << zero_cross << " ";
     parameters << diffpm << " ";
+    *(it++) = zero_cross;
+    *(it++) = diffpm;
     //    parameters << maxall / 127 << " ";
     //    parameters << avg << " ";
     //    parameters << stdev / 127<< " ";
     //    parameters << energy / (j*127) << " ";
     //    parameters << (maxp - maxm )/ 256 << " ";
+
     for (; it_data_fft < 512; ++it_data_fft)
     {
       data_before_fft[it_data_fft] = 0;
@@ -738,6 +745,11 @@ void Data::findPhonemeBorders()
     parameters << central_moment2 / 10e6 << " ";
     parameters << central_moment3 / 10e10 << " ";
     parameters << powerl / powerh << " ";
+    *(it++) = spectralMoment0Val / 10e5;
+    *(it++) = normalizedMoment1Val / 10e4;
+    *(it++) = central_moment2 / 10e6;
+    *(it++) = central_moment3 / 10e10;
+    *(it++) = powerl / powerh;
 
     //zmiana skali
     double thres_after_signal = max_after_signal * 0.2;
