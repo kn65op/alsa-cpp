@@ -458,28 +458,20 @@ std::vector<double> Data::get3Formants(int frame)
 
 void Data::findPhonemeBorders()
 {
-  //szukanie pierwszej i ostatniej ramki z mową
-  int first, last;
-  int max = getWindowsNumber();
-  first = 0;
-  while (first < max && !isFrameWithSpeech(first++)); //pierwsza ramka
-  last = max;
-  while (last > 0 && !isFrameWithSpeech(last--));
-  first -= (first > 10 ? 10 : first);
-  last += (max - last > 10 ? 10 : max - last);
-  int first_sample = first * window_start;
+
+  int first_sample = speech_begin * window_start;
   //progi
   std::vector<double> thresholds = getALCRThresholds();
 
   //sprawdzenie czy jest mowa
-  if (first >= last)
+  if (speech_begin >= speech_end)
   {
     return;
   }
 
   //liczenie LCR
-  std::vector<int> lcr((last - first) * window_start + window_length);
-  int i = first * window_start;
+  std::vector<int> lcr((speech_end - speech_begin) * window_start + window_length);
+  int i = speech_begin * window_start;
   for (int & l : lcr)
   {
     for (auto t : thresholds)
@@ -893,4 +885,16 @@ std::vector<double> Data::getALCRThresholds()
   scale /= max_it;
   for (int i = 1; i < max_it; ++i) ALCRthresholds.push_back(i * scale + bias);
   return ALCRthresholds;
+}
+
+void Data::findSpeechBorders()
+{
+  //szukanie pierwszej i ostatniej ramki z mową
+  int max = getWindowsNumber();
+  speech_begin = 0;
+  while (speech_begin < max && !isFrameWithSpeech(speech_begin++)); //pierwsza ramka
+  speech_end = max;
+  while (speech_end > 0 && !isFrameWithSpeech(speech_end--));
+  speech_begin -= (speech_begin > 10 ? 10 : speech_begin);
+  speech_end += (max - speech_end > 10 ? 10 : max - speech_end);
 }

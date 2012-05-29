@@ -275,12 +275,18 @@ namespace TALSA
      * @return Częstotliwość dla danego prążka.
      */
     double getFrequencyFromSpectrum(int i, int fft_len) const;
+    /**
+     * Funkcja szukająca granic mowy.
+     */
+    void findSpeechBorders();
     /** Progi do wyznaczania ALCR
      */
     static std::vector<double> ALCRthresholds;
     /** czy progi zostały stworzone
      */
     static bool is_ALCRThresholds;
+    /** Początek i koniec fragmentu mowy. */
+    int speech_begin, speech_end;
   };
 }
 
