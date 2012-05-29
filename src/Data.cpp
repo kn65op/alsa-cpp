@@ -111,7 +111,6 @@ void Data::removeConstantComponent()
   {
     avg += (double) data[i] / (double) mem_size;
   }
-  std::cout << avg << "\n";
   for (int i = 0; i < mem_size; i++)
   {
     data[i] -= (int) avg;
@@ -161,9 +160,9 @@ void Data::test()
   window_length_in_s = length;
   window_overlap = overlap;
   window_length = length * sample_frequency;
-  //  std::cout << window_length << "\n";
+  //  parameters << window_length << "\n";
   window_start = window_length * (1 - overlap);
-  //  std::cout << window_start << "\n";
+  //  parameters << window_start << "\n";
 }**/
 
 void Data::setFrameLength(int length, int overlap)
@@ -202,12 +201,21 @@ double Data::getFrameEnergy(int n)
 bool Data::isSpeechInside(int start, int end)
 {
   double energy = 0;
+  double max = 0;
+  double min = 0;
   for (int i = start; i != end; ++i)
   {
     energy += pow(data[i] - TALSA::SIGNAL0, 2);
+    if ((data[i] - TALSA::SIGNAL0) > max)
+    {
+      max = data[i] - TALSA::SIGNAL0;
+    }
+    if ((data[i] - TALSA::SIGNAL0) < min)
+    {
+      min = data[i] - TALSA::SIGNAL0;
+    }
   }
-  std::cout << energy << "\n";
-  return energy > (end - start) * 4;
+  return (energy > (end - start) * 4 && max > 5) || max > 10 || min < -10;
 }
 
 bool Data::isFrameWithSpeech(int n)
@@ -354,6 +362,11 @@ double Data::getFrequencyFromSpectrum(int i) const
   return i * getSampleFrequency() / window_length;
 }
 
+double Data::getFrequencyFromSpectrum(int i, int fft_len) const
+{
+  return i * getSampleFrequency() / fft_len;
+}
+
 double Data::spectralMoment0()
 {
   if (spectalMoment0Val == -1)
@@ -452,7 +465,6 @@ void Data::findPhonemeBorders()
   while (last > 0 && !isFrameWithSpeech(last--));
   first -= (first > 10 ? 10 : first);
   last += (max - last > 10 ? 10 : max - last);
-  std::cout << first * window_start << " " << last * window_start << "\n";
   int first_sample = first * window_start;
   //progi
   std::vector<double> thresholds;
@@ -536,6 +548,25 @@ void Data::findPhonemeBorders()
     {
       a = 0;
     }
+  }
+  //uśrednianie alcr
+  std::vector<double> tmp(alcr);
+  int tmp_int_size = 5;
+  int tmp_max = alcr.size() - tmp_int_size;
+  double tmp_sum;
+  for (int i = tmp_int_size; i < tmp_max; ++i)
+  {
+    tmp_sum = 0;
+    int j_size = tmp_int_size + 1;
+    for (int j = -tmp_int_size; j < j_size; ++j)
+    {
+      tmp_sum += tmp[i + j];
+    }
+    if ((alcr[i] = tmp_sum / (tmp_int_size * 2 + 1)) < 0.5)
+    {
+      alcr[i] = 0;
+    }
+
   }
 
   std::ofstream file("ALCR.dat", std::ios::out);
@@ -631,36 +662,98 @@ void Data::findPhonemeBorders()
   }
   segfile.close();
 
-  std::cout << "analiza segmentów\n";
   //analiza segmentów
   //inicjalizacja fft
   double data_after_fft[1024];
+  double data_after_fft_signal[512];
   double data_before_fft[512];
   double autocor[1024];
   fftw_plan plan = fftw_plan_r2r_1d(1024, autocor, data_after_fft, FFTW_R2HC, FFTW_ESTIMATE);
+  fftw_plan plan_signal = fftw_plan_r2r_1d(512, data_before_fft, data_after_fft_signal, FFTW_R2HC, FFTW_ESTIMATE);
+  //testowa analiza
+  double zero_cross;
   // /analzia 
   std::ofstream wektor("wektor.dat", std::ios::out);
+  std::ofstream fourier("fourier.dat", std::ios::out);
   std::ofstream wektor_desc("wektor_desc.dat", std::ios::out);
   std::ofstream before("before.dat", std::ios::out);
   std::ofstream autokor("autokor.dat", std::ios::out);
   std::ofstream after("after.dat", std::ios::out);
+  std::ofstream parameters("parameters_cut.dat", std::ios::out);
+  std::ofstream before_thresholding("before_thres.dat", std::ios::out);
   int seg_size = segments.size();
-  int thres_out = 10000;
+  double thres_out = 10000;
+  int desc_count = 1;
   for (int i = 1; i < seg_size; ++i)
   {
+    //zerowanie dodatkowych parametrów
+    zero_cross = 0;
     if (!isSpeechInside(segments[i - 1], segments[i]))
     {
-      std::cout << "Cont\n";
       continue;
     }
-    wektor_desc << segments[i - 1] << " " << segments[i] << "\n";
+    wektor_desc << desc_count++ << " " << segments[i - 1] << " " << segments[i] << "\n";
     //przepisanie wartości
     int j;
     int it_data_fft = 0;
-    for (j = segments[i - 1]; j < segments[i] && it_data_fft < 512; ++j)
+    double maxp = 0;
+    double maxm = 0;
+    double diffpm = 0;
+    double sump = 0;
+    double summ = 0;
+    double countp = 0;
+    double countm = 0;
+    double avg = 0;
+    double energy = 0;
+    double stdev = 0;
+    for (j = segments[i - 1]; j < segments[i] && it_data_fft < 512; ++it_data_fft, ++j) //przepisanie segmentu 
     {
-      data_before_fft[it_data_fft++] = (data[j] - TALSA::SIGNAL0);
+      avg += data_before_fft[it_data_fft] = (data[j] - TALSA::SIGNAL0); // - (data[j-1] - TALSA::SIGNAL0) * 0.95; //preemfaza
+      energy += fabs(data_before_fft[it_data_fft]);
+      if (data_before_fft[it_data_fft] > maxp) //liczenie stosunku maksimum na plus do maksimum na minu
+      {
+        maxp = data_before_fft[it_data_fft];
+      }
+      else if (data_before_fft[it_data_fft] < maxm)
+      {
+        maxm = data_before_fft[it_data_fft];
+      }
+      //liczenie ilości próbek na plus i na minus oraz oraz średniej ważonej
+      if (data_before_fft[it_data_fft] > 0)
+      {
+        ++countp;
+        sump += data_before_fft[it_data_fft];
+      }
+      else
+      {
+        ++countm;
+        summ += data_before_fft[it_data_fft];
+      }
+      if ((data[j - 1] - TALSA::SIGNAL0) * (data[j] - TALSA::SIGNAL0) <= 0 && data[j - 1] != TALSA::SIGNAL0) //liczenie przejść przez zero
+      {
+        ++zero_cross;
+      }
     }
+    it_data_fft = 0;
+    for (j = segments[i - 1]; j < segments[i] && it_data_fft < 512; ++it_data_fft, ++j) //przepisanie segmentu 
+    {
+      stdev += pow(data_before_fft[it_data_fft] - avg, 2);
+    }
+    zero_cross /= j;
+    avg /= j;
+    stdev /= j;
+    stdev = sqrt(stdev);
+    diffpm = maxp / -maxm;
+    double maxall = maxp > -maxm ? maxp : -maxm;
+    //nowe parametry z postaci czasowej
+    parameters << "Zakres: " << segments[i - 1] << " " << segments[i] << "\n";
+    parameters << zero_cross << " ";
+    parameters << diffpm << " ";
+//    parameters << maxall / 127 << " ";
+//    parameters << avg << " ";
+//    parameters << stdev / 127<< " ";
+//    parameters << energy / (j*127) << " ";
+//    parameters << (maxp - maxm )/ 256 << " ";
     for (; it_data_fft < 512; ++it_data_fft)
     {
       data_before_fft[it_data_fft] = 0;
@@ -687,25 +780,111 @@ void Data::findPhonemeBorders()
       autokor << autocor[i] << " ";
     }
     autokor << "\n";
+    //preemfaza
+    for (int i = 1; i < 512; ++i)
+    {
+      data_before_fft[i] = data_before_fft[i] - data_before_fft[i - 1] * 0.95;
+    }
     fftw_execute(plan);
+    fftw_execute(plan_signal);
     //liczenie amplitudy
     data_after_fft[0] = fabs(data_after_fft[0]);
+    double max_after_fft = data_after_fft[0];
     for (int i = 1; i < 512; ++i) //zamiana na moduł
     {
-      data_after_fft[i] = sqrt(pow(data_after_fft[i], 2) + pow(data_after_fft[1024 - i], 2));
+      if ((data_after_fft[i] = sqrt(pow(data_after_fft[i], 2) + pow(data_after_fft[1024 - i], 2))) > max_after_fft)
+      {
+        //	parameters << ((data_after_fft[i] = sqrt(pow(data_after_fft[i], 2) + pow(data_after_fft[1024 - i], 2))) > max_after_fft ) << "\n";
+        //	parameters << data_after_fft[i] << "?" << max_after_fft << "\n";
+        max_after_fft = data_after_fft[i];
+      }
     }
+    //liczenie amplitudy 2
+    data_after_fft_signal[0] = abs(data_after_fft_signal[0]);
+    double max_after_signal = data_after_fft_signal[0];
+    double powerl = 0;
+    double powerh = 0;
+    for (int i = 1; i < 256; ++i)
+    {
+      if ((data_after_fft_signal[i] = sqrt(pow(data_after_fft_signal[i], 2) + pow(data_after_fft_signal[512 - i], 2))) > max_after_signal)
+      {
+        max_after_signal = data_after_fft_signal[i];
+      }
+      if (i < 128)
+      {
+        powerl += data_after_fft_signal[i];
+      }
+      else
+      {
+        powerh += data_after_fft_signal[i];
+      }
+    }
+    double fft_good = 257;
+    double spectralMoment0Val = 0;
+    for (int i = 0; i < fft_good; ++i)
+    {
+      spectralMoment0Val += data_after_fft_signal[i];
+    }
+    double normalizedMoment1Val = 0;
+    for (int i = 0; i < fft_good; ++i)
+    {
+      normalizedMoment1Val += data_after_fft_signal[i] * getFrequencyFromSpectrum(i, 512);
+    }
+    normalizedMoment1Val /= spectralMoment0Val;
+    double central_moment2 = 0;
+    for (int i = 0; i < fft_good; ++i)
+    {
+      central_moment2 += data_after_fft_signal[i] * pow(getFrequencyFromSpectrum(i, 512) - normalizedMoment1Val, 2);
+    }
+    central_moment2 /= spectralMoment0Val;
+    double central_moment3 = 0;
+    for (int i = 0; i < fft_good; ++i)
+    {
+      central_moment3 += data_after_fft_signal[i] * pow(getFrequencyFromSpectrum(i, 512) - normalizedMoment1Val, 3);
+    }
+    central_moment3 /= spectralMoment0Val;
+    parameters << spectralMoment0Val / 10e5 << " ";
+    parameters << normalizedMoment1Val / 10e4 << " ";
+    parameters << central_moment2 / 10e6 << " ";
+    parameters << central_moment3 / 10e10 << " ";
+    parameters << powerl / powerh << " ";
     //TODO wypisanie po fft
     for (int i = 0; i < 513; ++i)
     {
       after << data_after_fft[i] << " ";
     }
     after << "\n";
+    wektor << zero_cross << " ";
+    //zmiana skali
+    double thres_after_signal = max_after_signal * 0.2;
+    for (int i = 0; i < 257; ++i)
+    {
+      wektor << (data_after_fft_signal[i] > thres_after_signal) << " ";
+      fourier << data_after_fft_signal[i] / max_after_signal << " ";
+    }
+    //progowanie adaptacyjne (do fragmentu)
+    thres_out = max_after_fft * 0.2;
+    //    parameters << max_after_fft << "\n";
+    //    parameters << thres_out << "\n";
     for (int i = 0; i < 513; ++i) //zapis do pliku
     {
       wektor << (data_after_fft[i] > thres_out) << " "; //zamiana na wektor binarny
+      if (data_after_fft[i])
+      {
+        before_thresholding << log10(data_after_fft[i] / max_after_fft) << " ";
+      }
     }
+
     wektor << "\n";
+    fourier << "\n";
+    before_thresholding << "\n";
+    parameters << "\n";
   }
+  after.close();
+  before.close();
+  autokor.close();
   wektor.close();
+  fourier.close();
   wektor_desc.close();
+  before_thresholding.close();
 }

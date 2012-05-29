@@ -161,6 +161,12 @@ namespace TALSA
      */
     void findPhonemeBorders();
     
+    /**
+     * Funkcja zwracająca progi do wyznaczania granic fonemów.
+     * @return std::vector<double> z progami.
+     */
+    static std::vector<double> getALCRThresholds();
+    
 
     void test();
   private:
@@ -262,6 +268,19 @@ namespace TALSA
      * @return Częstotliwość dla danego prążka.
      */
     double getFrequencyFromSpectrum(int i) const;
+    /**
+     * Funkcja zwracająca częstotliwość na osi w widmie.
+     * @param i Numer prążka.
+     * @param fft_len Długość fft.
+     * @return Częstotliwość dla danego prążka.
+     */
+    double getFrequencyFromSpectrum(int i, int fft_len) const;
+    /** Progi do wyznaczania ALCR
+     */
+    static std::vector<double> ALCRthresholds;
+    /** czy progi zostały stworzone
+     */
+    static bool is_ALCRThresholds;
   };
 }
 
