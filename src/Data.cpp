@@ -20,6 +20,9 @@
 
 using namespace TALSA;
 
+std::vector<double> Data::ALCRthresholds = std::vector<double>();
+bool Data::is_ALCRThresholds = false;
+
 Data::Data() : size(0)
 {
   data = 0;
@@ -455,7 +458,6 @@ std::vector<double> Data::get3Formants(int frame)
 
 void Data::findPhonemeBorders()
 {
-  int signal_max = 127;
   //szukanie pierwszej i ostatniej ramki z mową
   int first, last;
   int max = getWindowsNumber();
@@ -467,44 +469,14 @@ void Data::findPhonemeBorders()
   last += (max - last > 10 ? 10 : max - last);
   int first_sample = first * window_start;
   //progi
-  std::vector<double> thresholds;
-  int max_it = 6;
-  double scale = 0.01 * signal_max;
-  scale /= max_it;
-  for (int i = 1; i < max_it; ++i) thresholds.push_back(i * scale);
-  scale = 0.1 * signal_max - 0.01 * signal_max;
-  double bias = 0.01 * signal_max;
-  max_it = 25;
-  scale /= max_it;
-  for (int i = 1; i < max_it; ++i) thresholds.push_back(i * scale + bias);
-  scale = 0.9 * signal_max - 0.1 * signal_max;
-  bias = 0.1 * signal_max;
-  max_it = 15;
-  scale /= max_it;
-  for (int i = 1; i < max_it; ++i) thresholds.push_back(i * scale + bias);
-  scale = 0.99 * signal_max - 0.9 * signal_max;
-  bias = 0.9 * signal_max;
-  max_it = 25;
-  scale /= max_it;
-  for (int i = 1; i < max_it; ++i) thresholds.push_back(i * scale + bias);
-  scale = signal_max * 0.01;
-  bias = 0.99 * signal_max;
-  max_it = 6;
-  scale /= max_it;
-  for (int i = 1; i < max_it; ++i) thresholds.push_back(i * scale + bias);
-
-  std::ofstream thresfile("thres.dat", std::ios::out);
-  for (auto t : thresholds)
-  {
-    thresfile << t << "\n";
-  }
-  thresfile.close();
+  std::vector<double> thresholds = getALCRThresholds();
 
   //sprawdzenie czy jest mowa
   if (first >= last)
   {
     return;
   }
+
   //liczenie LCR
   std::vector<int> lcr((last - first) * window_start + window_length);
   int i = first * window_start;
@@ -749,11 +721,11 @@ void Data::findPhonemeBorders()
     parameters << "Zakres: " << segments[i - 1] << " " << segments[i] << "\n";
     parameters << zero_cross << " ";
     parameters << diffpm << " ";
-//    parameters << maxall / 127 << " ";
-//    parameters << avg << " ";
-//    parameters << stdev / 127<< " ";
-//    parameters << energy / (j*127) << " ";
-//    parameters << (maxp - maxm )/ 256 << " ";
+    //    parameters << maxall / 127 << " ";
+    //    parameters << avg << " ";
+    //    parameters << stdev / 127<< " ";
+    //    parameters << energy / (j*127) << " ";
+    //    parameters << (maxp - maxm )/ 256 << " ";
     for (; it_data_fft < 512; ++it_data_fft)
     {
       data_before_fft[it_data_fft] = 0;
@@ -887,4 +859,38 @@ void Data::findPhonemeBorders()
   fourier.close();
   wektor_desc.close();
   before_thresholding.close();
+}
+
+std::vector<double> Data::getALCRThresholds()
+{
+  if (is_ALCRThresholds)
+  {
+    return ALCRthresholds;
+  }
+  int max_it = 6;
+  int signal_max = 127;
+  double scale = 0.01 * signal_max;
+  scale /= max_it;
+  for (int i = 1; i < max_it; ++i) ALCRthresholds.push_back(i * scale);
+  scale = 0.1 * signal_max - 0.01 * signal_max;
+  double bias = 0.01 * signal_max;
+  max_it = 25;
+  scale /= max_it;
+  for (int i = 1; i < max_it; ++i) ALCRthresholds.push_back(i * scale + bias);
+  scale = 0.9 * signal_max - 0.1 * signal_max;
+  bias = 0.1 * signal_max;
+  max_it = 15;
+  scale /= max_it;
+  for (int i = 1; i < max_it; ++i) ALCRthresholds.push_back(i * scale + bias);
+  scale = 0.99 * signal_max - 0.9 * signal_max;
+  bias = 0.9 * signal_max;
+  max_it = 25;
+  scale /= max_it;
+  for (int i = 1; i < max_it; ++i) ALCRthresholds.push_back(i * scale + bias);
+  scale = signal_max * 0.01;
+  bias = 0.99 * signal_max;
+  max_it = 6;
+  scale /= max_it;
+  for (int i = 1; i < max_it; ++i) ALCRthresholds.push_back(i * scale + bias);
+  return ALCRthresholds;
 }
