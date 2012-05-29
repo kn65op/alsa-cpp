@@ -458,7 +458,6 @@ std::vector<double> Data::get3Formants(int frame)
 
 void Data::findPhonemeBorders()
 {
-
   int first_sample = speech_begin * window_start;
   //progi
   std::vector<double> thresholds = getALCRThresholds();
@@ -483,16 +482,6 @@ void Data::findPhonemeBorders()
     }
     ++i;
   }
-  std::ofstream fileclr("LCR.dat", std::ios::out);
-  for (int i = first_sample; i > 0; --i)
-  {
-    fileclr << "0 ";
-  }
-  for (auto l : lcr)
-  {
-    fileclr << l << " ";
-  }
-  fileclr.close();
 
   //liczenie ALCR
   std::vector<double> alcr(lcr.size() - 200);
@@ -513,6 +502,7 @@ void Data::findPhonemeBorders()
       a = 0;
     }
   }
+
   //uśrednianie alcr
   std::vector<double> tmp(alcr);
   int tmp_int_size = 5;
@@ -530,21 +520,9 @@ void Data::findPhonemeBorders()
     {
       alcr[i] = 0;
     }
-
   }
 
-  std::ofstream file("ALCR.dat", std::ios::out);
-
-  for (int i = first_sample + 100; i > 0; --i)
-  {
-    file << "0 ";
-  }
-  for (auto a : alcr)
-  {
-    file << a << " ";
-  }
-
-  std::vector<int> segments;
+  segments.clear();
   double half_of_local_min = 0.01;
   int half_of_local_min_in_samples = sample_frequency * half_of_local_min;
   double min_segment_duration = 0.012;
@@ -581,35 +559,6 @@ void Data::findPhonemeBorders()
           i += min_segment_duraion_in_samples - half_of_local_min_in_samples;
         }
       }
-      /*   if (alcr[i] <= alcr[i - 1]) // mniejsze od poprzedniego, zwiększamy licznik
-         {
-           //szukamy minimum
-           if (++mins_back == half_of_local_min_in_samples) // mamy minimum wstecz, sprawdzamy wprzód, szukanie najbliższego minimum lokalnego, które ma otoczenie 
-           {
-             mins_back = 0;
-             bool ok = false;
-             while (!ok)
-             {
-               ok = true;
-               int local_max_it = half_of_local_min_in_samples + i;
-               for (int k = i + 1; k < local_max_it; ++k) //iteracja w przód
-               {
-                 if (alcr[i] > alcr[k]) //znaleziono mniejszą liczbę
-                 {
-                   i = k;
-                   ok = false;
-                   break; //zatrzymanie pętli
-                 }
-               }
-             }
-             segments.push_back(i);
-             i += min_segment_duraion_in_samples - half_of_local_min_in_samples;
-           }
-         }
-         else //większe od poprzedniego, zerowanie licznika
-         {
-           mins_back = 0;
-         }**/
     }
   }
 
@@ -618,13 +567,6 @@ void Data::findPhonemeBorders()
   {
     a += 100 + half_of_local_min + first_sample;
   }
-
-  std::ofstream segfile("segments.dat", std::ios::out);
-  for (auto a : segments)
-  {
-    segfile << a << "\n";
-  }
-  segfile.close();
 
   //analiza segmentów
   //inicjalizacja fft

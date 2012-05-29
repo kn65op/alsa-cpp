@@ -287,6 +287,9 @@ namespace TALSA
     static bool is_ALCRThresholds;
     /** Początek i koniec fragmentu mowy. */
     int speech_begin, speech_end;
+    /** wektor granic pomiędzy segmentami mowy
+     */
+    std::vector<int>segments;
   };
 }
 
