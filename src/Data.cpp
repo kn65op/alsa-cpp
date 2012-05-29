@@ -462,11 +462,6 @@ void Data::findPhonemeBorders()
   //progi
   std::vector<double> thresholds = getALCRThresholds();
 
-  //sprawdzenie czy jest mowa
-  if (speech_begin >= speech_end)
-  {
-    return;
-  }
 
   //liczenie LCR
   std::vector<int> lcr((speech_end - speech_begin) * window_start + window_length);
@@ -571,6 +566,7 @@ void Data::findPhonemeBorders()
 
 void Data::analyzeSegments()
 {
+  parameter.clear();
   //inicjalizacja fft
   double data_after_fft[1024];
   double data_after_fft_signal[512];
@@ -812,7 +808,7 @@ std::vector<double> Data::getALCRThresholds()
   return ALCRthresholds;
 }
 
-void Data::findSpeechBorders()
+bool Data::findSpeechBorders()
 {
   //szukanie pierwszej i ostatniej ramki z mową
   int max = getWindowsNumber();
@@ -822,4 +818,11 @@ void Data::findSpeechBorders()
   while (speech_end > 0 && !isFrameWithSpeech(speech_end--));
   speech_begin -= (speech_begin > 10 ? 10 : speech_begin);
   speech_end += (max - speech_end > 10 ? 10 : max - speech_end);
+  //sprawdzenie czy jest mowa
+
+  if (speech_begin >= speech_end)
+  {
+    return false;
+  }
+  return true;
 }

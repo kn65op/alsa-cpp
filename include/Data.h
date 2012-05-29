@@ -157,10 +157,27 @@ namespace TALSA
      */
     void prepareWindow(int n);
     /**
-     * Funkcja wyszukująca granice między fonemami.
+     * Funkcja wyszukująca granice między fonemami. Przed wyszukiwaniem fonemów należy znaleźć granice mowy za pomocą funkcji findSpeechBorders();
      */
     void findPhonemeBorders();
-    
+    /**
+     * Funkcja szukająca granic mowy.
+     * @return true, jeśli znaleziono mowę, false w przeciwnym wypadku.
+     */
+    bool findSpeechBorders();
+    /**
+     * Funkcja analizująca wykryte segmenty. Wcześniej należy wyznaczyć granice pomiędzy fonemami za pomocą funkcji findPhonemeBorders();
+     */
+    void analyzeSegments();
+    /**
+     * Funkcja zwracająca parametry wyznaczone dla kolejnych fonemów. Należy wcześniej je obliczyć za pomocą funkcji analyzeSegments();
+     * @return 
+     */
+    std::vector<std::vector<double>> getParameters() const
+    {
+      return parameter;
+    }
+
     /**
      * Funkcja zwracająca progi do wyznaczania granic fonemów.
      * @return std::vector<double> z progami.
@@ -275,14 +292,6 @@ namespace TALSA
      * @return Częstotliwość dla danego prążka.
      */
     double getFrequencyFromSpectrum(int i, int fft_len) const;
-    /**
-     * Funkcja szukająca granic mowy.
-     */
-    void findSpeechBorders();
-    /**
-     * Funkcja analizująca wykryte segmenty.
-     */
-    void analyzeSegments();
     /** Progi do wyznaczania ALCR
      */
     static std::vector<double> ALCRthresholds;
