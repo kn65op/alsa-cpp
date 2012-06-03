@@ -171,7 +171,7 @@ namespace TALSA
     void analyzeSegments();
     /**
      * Funkcja zwracająca parametry wyznaczone dla kolejnych fonemów. Należy wcześniej je obliczyć za pomocą funkcji analyzeSegments();
-     * @return 
+     * @return Macierz parametrów.
      */
     std::vector<std::vector<double>> getParameters() const
     {

@@ -557,11 +557,15 @@ void Data::findPhonemeBorders()
     }
   }
 
+  std::ofstream segm("segments.dat", std::ios::out);
   //przejście na numery próbek
   for (auto & a : segments)
   {
     a += 100 + half_of_local_min + first_sample;
+    segm << a << " ";
   }
+  segm.close();
+  std::cout << segments.size() << "\n";
 }
 
 void Data::analyzeSegments()
@@ -606,8 +610,8 @@ void Data::analyzeSegments()
     double avg = 0;
     double energy = 0;
     double stdev = 0;
-    std::vector<double>::iterator it = parameter.end()->begin();
     parameter.push_back(std::vector<double>(7));
+    std::vector<double>::iterator it = (parameter.end()-1)->begin();
     for (j = segments[i - 1]; j < segments[i] && it_data_fft < 512; ++it_data_fft, ++j) //przepisanie segmentu 
     {
       avg += data_before_fft[it_data_fft] = (data[j] - TALSA::SIGNAL0); // - (data[j-1] - TALSA::SIGNAL0) * 0.95; //preemfaza
